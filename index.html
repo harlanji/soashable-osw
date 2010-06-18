@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<title>Soashable OSW</title>
+
+		<!-- jquery + plugins -->
+		<script type="text/javascript" src="js/jquery-1.4.2.js"></script>
+
+		<script type="text/javascript" src="js/jquery.xmlns.js"></script>
+		<script type="text/javascript" src="js/jquery.jqote.js"></script>
+
+
+		<!-- jquery ui + plugins -->
+		<script type="text/javascript" src="js/jquery-ui-1.8.2.custom.min.js"></script>
+		<link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.2.custom.css" />
+
+		<script type="text/javascript" src="js/jquery.treeview.js"></script>
+		<link rel="stylesheet" href="css/jquery.treeview.css" />
+
+		<script type="text/javascript" src="js/jquery.oswui.js"></script>
+		<script type="text/javascript" src="js/jquery.soashableui.js"></script>
+		
+
+		<!-- strophe + plugins -->
+		<script type="text/javascript" src="js/strophe.js"></script>
+
+		<script type="text/javascript" src="js/strophe.pubsub.js"></script>
+		<script type="text/javascript" src="js/strophe.roster.js"></script>
+		<script type="text/javascript" src="js/strophe.osw.js"></script>
+
+
+		<!-- application -->
+		<script type="text/javascript" src="js/soashable-osw.js"></script>
+	</head>
+<body>
+
+
+<div class="chat-bar">
+
+
+</div>
+
+<div class="activity-view">
+
+
+</div>
+
+
+<div id="templates" class="display: none; visibility: hidden;">
+
+<script type="text/x-jqote-template" id="tpl_login">
+  <![CDATA[
+  <div id='<%= this.id %>' style='text-align: center'>
+    <form name='cred'>
+      <label for='jid'>JID:</label>
+      <input type='text' id='jid' value='<%= this.default_jid %>' />
+      <label for='pass'>Password:</label>
+      <input type='password' id='pass' value='<%= this.default_pass %>' />
+      <input type='button' id='connect' value='connect' />
+    </form>
+  </div>
+  ]]>
+</script>
+
+<script type="text/x-jqote-template" id="tpl_log">
+  <![CDATA[
+  <div id='<%= this.id %>'></div>
+  ]]>
+</script>
+
+</div>
+</body>
+</html>
