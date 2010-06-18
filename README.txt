@@ -11,10 +11,15 @@ are:
  - Provide a second implementation of OSW standards to help ensure they are 
    generic enough to be implemented on multiple platforms.
 
+Please read the doumentation from the Official OSW Web client in order to set up
+the infrastructure needed to run this application:
+
+ http://wiki.github.com/onesocialweb/osw-openfire-plugin/installing-the-web-client
 
 Note that this software is provided as-is under the MIT license. Since this is 
 is just a playground at this point, things are bound to break. Please feel free
 to fork at any time and push some changes back if you think something I am 
 doing could be better, rather than bug me about it :)
+
 
 Happy Hacking.
