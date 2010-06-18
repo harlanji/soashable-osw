@@ -28,5 +28,23 @@ $.widget( "ui.soashable_chatbar", {
 	}
 });
 
+
+
+$.widget( "ui.soashable_im", {
+	options: {
+		partner: null,
+		connection: null
+	},
+
+	_create: function() {
+		//this.element.append( "<div class='
+	},
+
+	destroy: function() {
+
+	}
+});
+
+
 })(jQuery);
 

@@ -114,6 +114,14 @@ $(document).ready(function () {
 		autoOpen: false
 	});
 
+
+	$(".roster-items").treeList({
+		onSelect: function() {
+			alert("selected! "+$(this).treeList('selected').text() );
+		}
+	});
+
+
 /*
 	$("#roster").treeview({
 		persist: "location",
