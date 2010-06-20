@@ -42,6 +42,11 @@ $.widget( "ui.soashable_im", {
 
 	destroy: function() {
 
+	},
+
+	append: function(msg) {
+		
+
 	}
 });
 

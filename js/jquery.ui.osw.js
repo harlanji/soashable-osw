@@ -5,83 +5,64 @@
 
 $.widget( "ui.osw_roster", {
 	options: {
-		connection: null,
-_uiGroups : {},
+		connection: null
 	},
+
+	_template: $.jqotec('<ul class="roster"></ul>'),
+	_groupTemplate: $.jqotec('<li class="group" id="<%= this.id %>"><span class="name"><%= this.group_name %></span><ul class="entries"></ul></li>'),
+	_entryTemplate: $.jqotec('<li class="entry" id="<%= this.id %>"><span class="alias"><%= this.alias %></span></li>'),
 	
 	_create: function() {
 
 		this.options.connection.roster.registerCallback( this._received_roster );
 	},
 	_init: function() {
-
+		$(this.element).jqotesub( this._template, {} );
 	},
 	destroy: function() {
 		
 	},
 
 
-	group: function(group_name, create_options) {
-		if( !this.options._uiGroups.hasOwnProperty( group_name ) ) {
-			// FIXME script injection...
-			var grp = this.element.append( $("<div class='group'></ul>").osw_rostergroup(create_options) );
+	addgroup: function(group) {
+		return $(this.element)
+			.jqoteapp( this._groupTemplate, {
+			id: this._groupElId(group),
+			group_name: group
+		} );
+	},
 
-			this.options._uiGroups[ group_name ] = grp;
-		}
+	addentry: function(group, jid) {
+		return $( '#' + this._groupElId(group) + " > .entries" )
+			.jqoteapp( this._entryTemplate, {
+				id: this._entryElId(group, jid),
+				alias: jid
+			});
+	},
 
-		return this.options._uiGroups[ group_name ];
+	groupEl: function(group) {
+		return $( '#' + this._groupElId(group) );
+	},
+
+	entryEl: function(group, jid) {
+		return $( '#' + this._entryElId(group, jid) );
 	},
 
 	_received_roster: function(items) {
 		alert("got roster");
-	}
+	},
+
+	_groupElId: function(group) {
+		// TODO find a fast hashing function
+		return MD5.hexdigest("group." + group);
+	},
+	_entryElId: function(group, jid) {
+		// TODO find a fast hashing function
+		return MD5.hexdigest("entry." + group + "." + jid);
+	} 
 
 });
 
-$.widget( "ui.osw_rostergroup", {
-	options: {
-		connection: null,
-		group_name: null
-	},
-	_create: function() {
-		// $(groupEl).osw_roster.group('remove')
-		// $(groupEl).osw_roster.group('remove')
-
-		var label = $("<span class='group'></span>");
-		label.text(options.group_name);
-
-		var entryList = $("<ul class='entries'></ul>");
-	},
-	_init: function() {
-
-	},
-	destroy: function() {
-
-	}
-
-});
-
-$.widget( "ui.osw_rosteritem", {
-	options: {
-		connection: null
-	},
-	_create: function() {
-		// $(groupEl).osw_roster.group('remove')
-		// $(groupEl).osw_roster.group('remove')
-
-		alert(this.element);
-
-		
-		//return $("<ul class='group'></ul>");
-	},
-	_init: function() {
-
-	},
-	destroy: function() {
-
-	}
-
-});
 
 $.widget( "ui.osw_activityview", {
 	options: {

@@ -45,25 +45,19 @@
 
 </div>
 
-<ul class="roster-items">
-	<li>Group 1
-		<ul class="group-items">
-			<li><span class="alias">Somebody 1</span></li>
-			<li><span class="alias">Somebody 2</span></li>
+<ul class="roster">
+	<li class="group">
+		<span class="name">Group 1</span>
+		<ul class="entries">
+			<li class="entry"><span class="alias">Somebody 1</span></li>
+			<li class="entry"><span class="alias">Somebody 2</span></li>
 		</ul>
 	</li>
-
-	<li>Group 2
-		<ul class="group-items">
-			<li><span class="alias">Somebody 3</span></li>
-			<li><span class="alias">Somebody 4</span></li>
-		</ul>
-	</li>
-
-	<li>Others
-		<ul class="group-items">
-			<li><span class="alias">Somebody 5</span></li>
-			<li><span class="alias">Somebody 6</span></li>
+	<li class="group">
+		<span class="name">Group 1</span>
+		<ul class="entries">
+			<li class="entry"><span class="alias">Somebody 1</span></li>
+			<li class="entry"><span class="alias">Somebody 2</span></li>
 		</ul>
 	</li>
 </ul>
@@ -90,6 +84,13 @@
   <div id='<%= this.id %>'></div>
   ]]>
 </script>
+
+<div class="soashable_im" >
+	<div class="incoming"></div>
+	<textarea class="outgoing"></textarea>
+	<button class="send" c:action="send" xmlns:c="urn:controller"></button>
+</div>
+
 
 </div>
 </body>
