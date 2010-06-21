@@ -111,7 +111,8 @@ $(document).ready(function () {
 	var activityview_win = $(".activity-view").dialog({
 		title: 'Activity Stream',
 		position: ['center', 'middle'],
-		autoOpen: false
+		autoOpen: false,
+		height: 400
 	});
 
 
