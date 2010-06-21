@@ -63,6 +63,35 @@ $.widget( "ui.osw_roster", {
 
 });
 
+$.widget("ui.osw_activitypublish", {
+	options: {
+		connection: null,
+	},
+
+	_template: $.jqotec('<div class="wtf"><form class="activity-publish"><input type="text" class="status" name="status"/><input type="submit" class="submit" name="submit" value="submit"/></form></div>'),
+
+	_create: function() {
+		var self = this;
+
+		$(this.element).jqoteapp(this._template, {});
+
+		$(this.element).find(".activity-publish").submit(function() {
+			try {
+				var status = $(this).find(".status").val();
+				$(this).find(".status").val('');
+
+				self.options.connection.osw.publishActivity( status );
+			} finally {
+				return false;
+			}
+		});
+	},
+
+	_clickedPublish: function() {
+
+	}
+});
+
 
 $.widget( "ui.osw_activityview", {
 	options: {

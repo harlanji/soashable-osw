@@ -31,8 +31,8 @@ function connection_event(status, condition)
 
 		connection.send($pres().tree());
 
-		$(".activity-view").osw_activityview('refresh');
-		$(".activity-view").dialog('open');
+		$("#activities .activity-view").osw_activityview('refresh');
+		$("#activities").dialog('open');
 
 		$('#login').dialog('close');
 
@@ -108,7 +108,7 @@ $(document).ready(function () {
 		position: ['left', 'top']
 	});
 
-	var activityview_win = $(".activity-view").dialog({
+	var activityview_win = $("#activities").dialog({
 		title: 'Activity Stream',
 		position: ['center', 'middle'],
 		autoOpen: false,
@@ -138,7 +138,8 @@ $(document).ready(function () {
 	connection = new Strophe.Connection(BOSH_SERVICE);
 
 	$(".chat-bar").soashable_chatbar({connection: connection});
-	$(".activity-view").osw_activityview({connection: connection});
+	$("#activities .publish-view").osw_activitypublish({connection: connection});
+	$("#activities .activity-view").osw_activityview({connection: connection});
 
 
 	//connection.addHandler( received_message, 'message', null, null, null, null );
