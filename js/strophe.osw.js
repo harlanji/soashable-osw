@@ -2,6 +2,49 @@
 Strophe.addConnectionPlugin('osw', (function() {
 
 
+var $aclr = function(perm, action, subjectType, subject) {
+	return $build('acl-rule', {xmlns: self.JQUERY_NAMESPACES.osw})
+		.c('acl-action', {permission: perm})
+			.t( action ).up()
+		.c('acl-subject', {type: subjectType}).t( subject ? subject : '' ).up()
+		.tree();
+}
+
+$aclr.parse = function(node) {
+
+	var rule;
+
+	$().xmlns( self.JQUERY_NAMESPACES, function() {
+		rule = {
+			'action': $("osw|acl-action", node).text(), 
+			'subjectType': $("osw|acl-subject", node).attr("type"),
+			'subject': $("osw|acl-subject", node).text(),
+			'permission': $(node).attr("permission")
+		}
+	}); 
+
+	return rule;
+}
+
+$aclr.permission = {
+	'grant' : 'http://onesocialweb.org/spec/1.0/acl/permission/grant',
+	'deny' : 'http://onesocialweb.org/spec/1.0/acl/permission/deny'
+}
+
+$aclr.action = {
+	'view' : 'http://onesocialweb.org/spec/1.0/acl/action/view',
+	'update' : 'http://onesocialweb.org/spec/1.0/acl/action/update'
+}
+
+$aclr.subject = {
+	'everyone' : 'http://onesocialweb.org/spec/1.0/acl/subject/everyone',
+	'user' : 'http://onesocialweb.org/spec/1.0/acl/subject/user',
+	'group' : 'http://onesocialweb.org/spec/1.0/acl/subject/group'
+	
+}
+
+
+
 var connection;
 
 
@@ -35,7 +78,7 @@ var self = {
 
 		$.each( self.OSW_NAMESPACES, function(k,v) {
 			Strophe.addNamespace( k, v );
-			$.xmlns
+			//$.xmlns
 		});
 
 
@@ -51,6 +94,7 @@ var self = {
 			}
 
 			// jid,service,node,ok_callback,error_back
+			// FIXME global jid
 			connection.pubsub.items( jid, 
 				options.who, 
 				self.JQUERY_NAMESPACES.microblog, 
@@ -60,6 +104,47 @@ var self = {
 				received_osw_activities_error
 			);
 		}
+	},
+
+	publishActivity: function(status) {
+
+
+		var entryXml = $build('pubsub', {xmlns: self.JQUERY_NAMESPACES.pubsub})
+			.c('item')
+				.c('entry', {xmlns: self.JQUERY_NAMESPACES.atom, 'xmlns:activity' : self.JQUERY_NAMESPACES.activity})
+					.c('title').t( status ).up()
+					.c('activity:verb').t( 'http://activitystrea.ms/schema/1.0/post' ).up()
+					.c('object', {xmlns: self.JQUERY_NAMESPACES.activity})
+						.c('object-type').t('http://onesocialweb.org/spec/1.0/object/status').up()
+						.c('content', {type: 'text/plain'}).t( status ).up().up()
+					/*.cnode($aclr(
+						$aclr.permission.grant,
+						$aclr.action.view,
+						$aclr.subject.group,
+						'bitches'
+					))*/
+					.cnode($aclr(
+						$aclr.permission.grant,
+						$aclr.action.view,
+						$aclr.subject.everyone
+					));
+
+		alert( entryXml );
+
+
+
+
+/*
+		// FIXME global jid
+		connection.pubsub.publish( jid, 
+			connection.getBareJidFromJid( jid),
+			self.JQUERY_NAMESPACES.microblog,
+			[entry],
+			function() {
+			
+			} );
+*/
+
 	},
 
 	statusChanged: connection_event,
@@ -86,10 +171,7 @@ function received_osw_activities(iq, options) {
 				jid : $("activity|actor > atom|uri", this).text(),
 
 				acl : $("osw|acl-rule", this).map(function() { 
-					return {
-						'action': $("osw|acl-action", this).text(), 
-						'subject': $("osw|acl-subject", this).attr("type")
-					}; 
+					return $aclr.parse(this);
 				}),
 
 				objects : $("activity|object", this).map(function() { 
