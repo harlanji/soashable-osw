@@ -94,8 +94,7 @@ var self = {
 			}
 
 			// jid,service,node,ok_callback,error_back
-			// FIXME global jid
-			connection.pubsub.items( jid, 
+			connection.pubsub.items( connection.jid, 
 				options.who, 
 				self.JQUERY_NAMESPACES.microblog, 
 				function(iq) {
@@ -107,29 +106,53 @@ var self = {
 	},
 
 	publishActivity: function(status) {
+		var pubId = connection.getUniqueId("publishnode");
+
+		var pubsubEl = $build('pubsub', {xmlns: self.JQUERY_NAMESPACES.pubsub})
+			.c('publish', {node: self.JQUERY_NAMESPACES.microblog})
+				.c('item')
+					.c('entry', {xmlns: self.JQUERY_NAMESPACES.atom, 'xmlns:activity' : self.JQUERY_NAMESPACES.activity})
+						.c('title').t( status ).up()
+						.c('activity:verb').t( 'http://activitystrea.ms/schema/1.0/post' ).up()
+						.c('object', {xmlns: self.JQUERY_NAMESPACES.activity})
+							.c('object-type').t('http://onesocialweb.org/spec/1.0/object/status').up()
+							.c('content', {type: 'text/plain'}).t( status ).up().up()
+						/*.cnode($aclr(
+							$aclr.permission.grant,
+							$aclr.action.view,
+							$aclr.subject.group,
+							'friends'
+						))*/
+						.cnode($aclr(
+							$aclr.permission.grant,
+							$aclr.action.view,
+							$aclr.subject.everyone
+						))
+			.tree();
+
+		// FIXME global jid
+		var iqEl = $iq({
+				//from: connection.jid, 
+				//to: jid, 
+				type:'set', 
+				id: pubId
+			}).cnode( pubsubEl )
+			.tree();
+
+		console.dirxml( iqEl );
 
 
-		var entryXml = $build('pubsub', {xmlns: self.JQUERY_NAMESPACES.pubsub})
-			.c('item')
-				.c('entry', {xmlns: self.JQUERY_NAMESPACES.atom, 'xmlns:activity' : self.JQUERY_NAMESPACES.activity})
-					.c('title').t( status ).up()
-					.c('activity:verb').t( 'http://activitystrea.ms/schema/1.0/post' ).up()
-					.c('object', {xmlns: self.JQUERY_NAMESPACES.activity})
-						.c('object-type').t('http://onesocialweb.org/spec/1.0/object/status').up()
-						.c('content', {type: 'text/plain'}).t( status ).up().up()
-					/*.cnode($aclr(
-						$aclr.permission.grant,
-						$aclr.action.view,
-						$aclr.subject.group,
-						'bitches'
-					))*/
-					.cnode($aclr(
-						$aclr.permission.grant,
-						$aclr.action.view,
-						$aclr.subject.everyone
-					));
+		connection.sendIQ( iqEl, function(iq) {
+			alert( "posted successfully");
 
-		alert( entryXml );
+			console.dirxml( iq );
+		},
+		function(iq) {
+			alert("post error");
+
+			console.dirxml( iq );
+		});
+		
 
 
 
