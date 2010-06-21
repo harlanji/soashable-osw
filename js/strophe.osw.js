@@ -64,6 +64,7 @@ var self = {
 		'client' : 'jabber:client',
 
 		'pubsub' : 'http://jabber.org/protocol/pubsub',
+		'pubsubevt' : 'http://jabber.org/protocol/pubsub#event',
 		'atom' : 'http://www.w3.org/2005/Atom',
 
 		'osw' : 'http://onesocialweb.org/spec/1.0/',
@@ -116,7 +117,7 @@ var self = {
 						.c('activity:verb').t( 'http://activitystrea.ms/schema/1.0/post' ).up()
 						.c('object', {xmlns: self.JQUERY_NAMESPACES.activity})
 							.c('object-type').t('http://onesocialweb.org/spec/1.0/object/status').up()
-							.c('content', {type: 'text/plain'}).t( status ).up().up()
+							.c('content', {xmlns: self.JQUERY_NAMESPACES.atom,type: 'text/plain'}).t( status ).up().up()
 						/*.cnode($aclr(
 							$aclr.permission.grant,
 							$aclr.action.view,
@@ -170,6 +171,53 @@ var self = {
 
 	},
 
+
+	_parseActivity: function(entry) {
+
+		var activity;
+
+		$().xmlns( self.JQUERY_NAMESPACES, function() {
+			
+				activity = {
+					id : $("atom|id", entry).text(),
+					title : $("atom|title", entry).text(),
+					published : $("atom|published", entry).text(),
+
+					verb : $("activity|verb", entry).text(),
+					'name' : $("activity|actor > atom|name", entry).text(),
+					jid : $("activity|actor > atom|uri", entry).text(),
+
+					acl : $("osw|acl-rule", entry).map(function() { 
+						return $aclr.parse(this);
+					}),
+
+					objects : $("activity|object", entry).map(function() { 
+						var obj = {
+							'id': $("id", this).text(),
+							'published': $("atom|published", this).text(),
+							'objectType': $("activity|object-type", this).text()
+						}; 
+
+						switch(obj.objectType) {
+							case 'http://onesocialweb.org/spec/1.0/object/status':
+								obj.status = $("atom|content", this).text();
+								break;
+
+							case 'http://onesocialweb.org/spec/1.0/object/picture':
+								obj.picture = $("html|link[rel='alternate']", this).attr("href");
+								break;
+						}
+
+						return obj;
+					}),
+				};
+;
+		});
+
+		return activity;
+
+	},
+
 	statusChanged: connection_event,
 
 };
@@ -181,57 +229,11 @@ function received_osw_activities(iq, options) {
 	log('Got OSW activities!');
 
 	$().xmlns( self.JQUERY_NAMESPACES, function() {
+		$("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry", iq).each(function(i, entry) {
+			var activity = self._parseActivity( entry );
 
-		$("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry", iq).each(function(i) {
-
-			var activity = {
-				id : $("atom|id", this).text(),
-				title : $("atom|title", this).text(),
-				published : $("atom|published", this).text(),
-
-				verb : $("activity|verb", this).text(),
-				'name' : $("activity|actor > atom|name", this).text(),
-				jid : $("activity|actor > atom|uri", this).text(),
-
-				acl : $("osw|acl-rule", this).map(function() { 
-					return $aclr.parse(this);
-				}),
-
-				objects : $("activity|object", this).map(function() { 
-					var obj = {
-						'id': $("id", this).text(),
-						'published': $("atom|published", this).text(),
-						'objectType': $("activity|object-type", this).text()
-					}; 
-
-					switch(obj.objectType) {
-						case 'http://onesocialweb.org/spec/1.0/object/status':
-							obj.status = $("atom|content", this).text();
-							break;
-
-						case 'http://onesocialweb.org/spec/1.0/object/picture':
-							obj.picture = $("html|link[rel='alternate']", this).attr("href");
-							break;
-					}
-
-					return obj;
-				}),
-			};
-	
 			options.cb(activity, options);
-
-
-	/*
-			$(objects).each(function(){
-				if(this.objectType == 'http://onesocialweb.org/spec/1.0/object/status') {
-				
-				}
-
-
-			});
-	*/
 		});
-
 	});
 	
 }

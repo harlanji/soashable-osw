@@ -107,7 +107,30 @@ $.widget( "ui.osw_activityview", {
 	},
 
 	_create: function() {
+		var self = this;
+
 		this.element.append($("<div class='activities'></div>")); 
+
+		this.options.connection.addHandler( function(msg) {
+				
+			try {		
+				$().xmlns( self.options.connection.osw.JQUERY_NAMESPACES, function() {
+
+					var entries = $("pubsubevt|event > pubsubevt|items > pubsubevt|item > atom|entry", msg);
+					if( entries.length > 0 ) {
+						entries.each(function(i, entry) {
+							var activity = self.options.connection.osw._parseActivity( entry );
+
+							self.append( activity );
+						});
+					}
+				});
+			} finally {
+				return true;
+			}
+
+		}, null, "message", "headline", null, null, null);
+
 	},
 	_init: function() {
 
