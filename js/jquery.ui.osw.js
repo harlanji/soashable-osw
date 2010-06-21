@@ -68,6 +68,15 @@ $.widget( "ui.osw_activityview", {
 	options: {
 		connection: null,
 	},
+
+	_activityTemplate: $.jqotec('<div class="activity" id="<%= this.id %>"><p>Activity by <%= this.act.name %> (<%= this.act.jid %>): <%= this.act.title %>. contains <%= this.act.objects.length %> objects and <%= this.act.acl.length %> ACL rules.</p><div class="objects"></div></div>'),
+
+	_objectTemplate: {
+		'http://onesocialweb.org/spec/1.0/object/status': $.jqotec('<p>Status: <%= this.obj.status %></p>'),
+		'http://onesocialweb.org/spec/1.0/object/picture': $.jqotec('<p>Picture: <%= this.obj.picture %></p>'),
+		'' : $.jqotec('<p>Unknown object type: <%= this.obj.objectType %></p>'),
+	},
+
 	_create: function() {
 		this.element.append($("<div class='activities'></div>")); 
 	},
@@ -87,24 +96,24 @@ $.widget( "ui.osw_activityview", {
 
 
 	append: function(act) {
-		
-		var html = "<div><p>Activity by " + act.name + " (" + act.jid + "): " + act.title + ". contains " + act.objects.length + " objects and " + act.acl.length + " ACL rules.</p>";
+		var actId = MD5.hexdigest( act.id );		
 
-		$.each(act.objects, function(i, obj) {
-			switch(obj.objectType) {
-				case 'http://onesocialweb.org/spec/1.0/object/status':
-					html += "<p>Status: " + obj.status + "</p>";
-					break;
-
-				case 'http://onesocialweb.org/spec/1.0/object/picture':
-					html += "<p>Picture: " + obj.picture + "</p>";
-					break;
-			}
+		// add the activity to the beginning of the stream
+		$(this.element).find(".activities").jqotepre(this._activityTemplate, {
+			id: actId,
+			act: act
 		});
-		html += "<hr/></div>";
 
-		$(".activities", this.element).append( $( html ) );
+		
+		$.each(act.objects, $.proxy(function(i, obj) {
+			var template = this._objectTemplate.hasOwnProperty( obj.objectType ) ?
+				obj.objectType : '';
 
+			// attach the object to the activity.
+			$("#" + actId + " > .objects").jqoteapp( this._objectTemplate[ template ], {
+				obj: obj
+			});
+		}, this));
 	},
 
 	_osw_activity_callback: function( act, options ) {

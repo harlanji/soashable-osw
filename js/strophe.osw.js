@@ -77,6 +77,7 @@ function received_osw_activities(iq, options) {
 		$("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry", iq).each(function(i) {
 
 			var activity = {
+				id : $("atom|id", this).text(),
 				title : $("atom|title", this).text(),
 				published : $("atom|published", this).text(),
 
