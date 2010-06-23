@@ -1,7 +1,27 @@
 (function($) {
 
+/*
+
+osw_roster
+
+Options:
+- connection (Strophe.Connection, default: null)
+	- more details
+
+Methods:
+- addgroup( group, [...])
+	- descriptions
+	- details on args, type, behavior
+
+Events:
+- someEvent
+	- description of when triggered
+	- description of cancellable
+		-what happens when cancelled
 
 
+
+*/
 
 $.widget( "ui.osw_roster", {
 	options: {

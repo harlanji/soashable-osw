@@ -1,4 +1,8 @@
 
+
+
+
+
 Strophe.addConnectionPlugin('osw', (function() {
 
 
@@ -49,16 +53,6 @@ var connection;
 
 
 var self = {
-
-	OSW_NAMESPACES : {
-		//'atom' : 'http://www.w3.org/2005/Atom',
-
-		//'osw' : 'http://onesocialweb.org/spec/1.0/',
-		//'activity' : 'http://activitystrea.ms/spec/1.0/',
-
-		//'microblog' : 'urn:xmpp:microblog:0'	
-	},
-
 	JQUERY_NAMESPACES : {
 		'httpbind' : 'http://jabber.org/protocol/httpbind',
 		'client' : 'jabber:client',
@@ -70,14 +64,14 @@ var self = {
 		'osw' : 'http://onesocialweb.org/spec/1.0/',
 		'activity' : 'http://activitystrea.ms/spec/1.0/',
 
-		'microblog' : 'urn:xmpp:microblog:0'	
+		'microblog' : 'urn:xmpp:microblog:0'
 	},
 
 
 	init: function(conn) {
 		connection = conn;
 
-		$.each( self.OSW_NAMESPACES, function(k,v) {
+		$.each( self.JQUERY_NAMESPACES, function(k,v) {
 			Strophe.addNamespace( k, v );
 			//$.xmlns
 		});
