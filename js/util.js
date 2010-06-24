@@ -8,9 +8,7 @@ delegate.prototype = {
 	add: function(fn, context) {
 		var handle;
 
-		do {
-			handle = Math.floor(Math.random() * 0x7fffffff);
-		} while( this._fn.hasOwnProperty(handle) );
+		handle = uniqeRandom( this._fn.hasOwnProperty );
 
 		if( context ) {
 			var wrapped = fn;
@@ -33,4 +31,19 @@ delegate.prototype = {
 		}
 	}
 
+}
+
+/**
+ * Returns a random number. defaults to max = INT32_MAX, min = 0.
+ * Check function should return true if there is a collision.
+ */
+function uniqeRandom(checkFn, max, min) {
+	var n;
+
+	max = max || 0x7fffffff;
+	min = min || 0;
+
+	do {
+		n = Math.floor( Math.random() * max ) + min;
+	} while( checkFn(n) );
 }
