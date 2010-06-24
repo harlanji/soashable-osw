@@ -125,10 +125,7 @@ var self = {
 						))
 			.tree();
 
-		// FIXME global jid
 		var iqEl = $iq({
-				//from: connection.jid, 
-				//to: jid, 
 				type:'set', 
 				id: pubId
 			}).cnode( pubsubEl )
@@ -147,72 +144,100 @@ var self = {
 
 			console.dirxml( iq );
 		});
-		
-
-
-
-
-/*
-		// FIXME global jid
-		connection.pubsub.publish( jid, 
-			connection.getBareJidFromJid( jid),
-			self.JQUERY_NAMESPACES.microblog,
-			[entry],
-			function() {
-			
-			} );
-*/
 
 	},
 
 
+	/**
+	 * Parse an activity from an ATOM entry node. It is such because pubsub has
+	 * multiple namespaces that contain activities--I've encountered /pubsub
+	 * and /pubsub#events.
+	 */
 	_parseActivity: function(entry) {
 
 		var activity;
 
-		$().xmlns( self.JQUERY_NAMESPACES, function() {
+		$(entry).xmlns( self.JQUERY_NAMESPACES, function() {
 			
 				activity = {
-					id : $("atom|id", entry).text(),
-					title : $("atom|title", entry).text(),
-					published : $("atom|published", entry).text(),
+					'id' : this.find("atom|id").text(),
+					'title' : this.find("atom|title").text(),
+					'published' : this.find("atom|published").text(),
 
-					verb : $("activity|verb", entry).text(),
-					'name' : $("activity|actor > atom|name", entry).text(),
-					jid : $("activity|actor > atom|uri", entry).text(),
+					'verb' : this.find("activity|verb").text(),
+					'name' : this.find("activity|actor > atom|name").text(),
+					'jid' : this.find("activity|actor > atom|uri").text(),
 
-					acl : $("osw|acl-rule", entry).map(function() { 
+					'acl' : this.find("osw|acl-rule").map(function() { 
 						return $aclr.parse(this);
 					}),
 
-					objects : $("activity|object", entry).map(function() { 
+					'objects' : this.find("activity|object").map(function() { 
 						var obj = {
-							'id': $("id", this).text(),
-							'published': $("atom|published", this).text(),
-							'objectType': $("activity|object-type", this).text()
+							'id': $(this).find("id").text(),
+							'published': $(this).find("atom|published").text(),
+							'objectType': $(this).find("activity|object-type").text()
 						}; 
 
+						// TODO make modular
 						switch(obj.objectType) {
 							case 'http://onesocialweb.org/spec/1.0/object/status':
-								obj.status = $("atom|content", this).text();
+								obj.status = $(this).find("atom|content").text();
 								break;
 
 							case 'http://onesocialweb.org/spec/1.0/object/picture':
-								obj.picture = $("html|link[rel='alternate']", this).attr("href");
+								obj.picture = $(this).find("html|link[rel='alternate']").attr("href");
 								break;
 						}
 
 						return obj;
 					}),
 				};
-;
 		});
 
 		return activity;
 
 	},
 
-	statusChanged: connection_event,
+    /**
+     * Function: inbox
+     * 
+     * List the inbox of activities for the current user.
+     **/
+    inbox : function() {
+		var sub = $iq({
+			'from' : connection.jid, 
+			'type' : 'get'
+		}).c('pubsub', {
+			'xmlns': self.JQUERY_NAMESPACES.pubsub 
+		}).c('items', {
+			'node' : 'http://onesocialweb.org/spec/1.0/inbox'
+		});
+		connection.sendIQ(sub.tree(), callbacks.activities, function(st) {
+			logger.error('Unable to send IQ to receive activities');
+			logger.debug(st);
+		});
+    },
+
+	/**
+	 * Get a list of all users subscribed to the PEP microblog.
+	 * 
+	 */
+	subscriptions : function() {
+		connection.sendIQ($iq({
+			'from': connection.jid, 
+			'type': 'get'
+		}).c('pubsub', { 
+			'xmlns': self.JQUERY_NAMESPACE.pubsub
+		}).c('subscriptions', { 
+			'xmlns': self.JQUERY_NAMESPACE.pubsub,
+			'node': self.JQUERY_NAMESPACE.microblog
+		}).tree(), callbacks.subscription);
+    },
+
+	statusChanged: function (status, condition) {
+
+	}
 
 };
 
@@ -222,8 +247,8 @@ var self = {
 function received_osw_activities(iq, options) {
 	log('Got OSW activities!');
 
-	$().xmlns( self.JQUERY_NAMESPACES, function() {
-		$("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry", iq).each(function(i, entry) {
+	$(iq).xmlns( self.JQUERY_NAMESPACES, function() {
+		this.find("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry").each(function(i, entry) {
 			var activity = self._parseActivity( entry );
 
 			options.cb(activity, options);
@@ -261,9 +286,7 @@ function received_message(msg) {
     return true;
 }
 
-function connection_event(status, condition) {
 
-}
 
 
 return self;
