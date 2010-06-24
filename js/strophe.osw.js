@@ -18,12 +18,12 @@ $aclr.parse = function(node) {
 
 	var rule;
 
-	$().xmlns( self.JQUERY_NAMESPACES, function() {
+	$(node).xmlns( self.JQUERY_NAMESPACES, function() {
 		rule = {
-			'action': $("osw|acl-action", node).text(), 
-			'subjectType': $("osw|acl-subject", node).attr("type"),
-			'subject': $("osw|acl-subject", node).text(),
-			'permission': $(node).attr("permission")
+			'action': this.find("osw|acl-action").text(), 
+			'permission': this.find("osw|acl-action").attr("permission"),
+			'subjectType': this.find("osw|acl-subject").attr("type"),
+			'subject': this.find("osw|acl-subject").text(),
 		}
 	}); 
 
