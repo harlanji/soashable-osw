@@ -68,6 +68,11 @@ var self = {
 	},
 
 
+
+	callbacks: {
+		'received_activity' : new delegate(),
+	},
+
 	init: function(conn) {
 		connection = conn;
 
@@ -76,13 +81,30 @@ var self = {
 			//$.xmlns
 		});
 
-
-		conn.addHandler(received_message, null, 'message', null, null,  null); 
+		conn.addHandler(this._receivedMessage_Activity, null, "message", "headline", null, null, null);
 	},
 
-	callbacks: {
-		'received_activity' : new delegate(),
+
+	_receivedMessage_Activity: function(msg) {
+		try {		
+			$(msg).xmlns( self.JQUERY_NAMESPACES, function() {
+
+				var entries = this.find("pubsubevt|event > pubsubevt|items > pubsubevt|item > atom|entry");
+				if( entries.length > 0 ) {
+					entries.each(function(i, entry) {
+						var activity = self._parseActivity( entry );
+
+						self.callbacks.received_activity.trigger( activity );
+					});
+				}
+			});
+		// ensure callback doesn't disappear upon error.
+		} finally {
+			return true;
+		}
 	},
+
+
 
 	activities: function(who){
 		// FIXME should !who get inbox() instead?
@@ -268,32 +290,6 @@ var self = {
 	}
 
 };
-
-function received_message(msg) {
-    var to = msg.getAttribute('to');
-    var from = msg.getAttribute('from');
-    var type = msg.getAttribute('type');
-    var elems = msg.getElementsByTagName('body');
-
-    if (type == "chat" && elems.length > 0) {
-	var body = elems[0];
-
-	log('ECHOBOT: I got a message from ' + from + ': ' + 
-	    Strophe.getText(body));
-    
-	var reply = $msg({to: from, from: to, type: 'chat'})
-            .cnode(Strophe.copyElement(body));
-	connection.send(reply.tree());
-
-	log('ECHOBOT: I sent ' + from + ': ' + Strophe.getText(body));
-    }
-
-    // we must return true to keep the handler alive.  
-    // returning false would remove it after it finishes.
-    return true;
-}
-
-
 
 
 return self;

@@ -131,27 +131,6 @@ $.widget( "ui.osw_activityview", {
 
 		this.element.append($("<div class='activities'></div>")); 
 
-		// FIXME this should be in the plugin
-		this.options.connection.addHandler( function(msg) {
-				
-			try {		
-				$().xmlns( self.options.connection.osw.JQUERY_NAMESPACES, function() {
-
-					var entries = $("pubsubevt|event > pubsubevt|items > pubsubevt|item > atom|entry", msg);
-					if( entries.length > 0 ) {
-						entries.each(function(i, entry) {
-							var activity = self.options.connection.osw._parseActivity( entry );
-
-							self.append( activity );
-						});
-					}
-				});
-			} finally {
-				return true;
-			}
-
-		}, null, "message", "headline", null, null, null);
-
 		this.options.connection.osw.callbacks.received_activity.add( this._osw_activity_callback, this );
 
 	},
