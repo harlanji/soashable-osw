@@ -37,6 +37,17 @@ function connection_event(status, condition)
 		$('#login').dialog('close');
 
 
+
+		// TODO abstract widget and dialog integration.
+		$("<div/>").appendTo( 'body' )
+			.soashable_conversation({
+				'partner' : 'harlan@osw1.soashable.com',
+				'connection' : connection
+			})
+			.dialog({
+				'autoOpen' : true, 
+				'title' : 'Conversation with harlan@osw1.soashable.com'
+			});
     }
 } 
 

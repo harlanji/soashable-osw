@@ -74,11 +74,15 @@
   ]]>
 </script>
 
+<script type="text/x-jqote-template" id="template_ui_soashable_conversation">
+<![CDATA[
 <div class="soashable_im" >
-	<div class="incoming"></div>
-	<textarea class="outgoing"></textarea>
-	<button class="send" c:action="send" xmlns:c="urn:controller"></button>
+	<div class="incoming_text"></div>
+	<textarea class="outgoing_text">Hello, <%= this.partner %>!</textarea>
+	<button class="send_message">Send Message</button>
 </div>
+]]>
+</script>
 
 
 </div>
