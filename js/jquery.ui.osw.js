@@ -131,6 +131,7 @@ $.widget( "ui.osw_activityview", {
 
 		this.element.append($("<div class='activities'></div>")); 
 
+		// FIXME this should be in the plugin
 		this.options.connection.addHandler( function(msg) {
 				
 			try {		
@@ -151,6 +152,8 @@ $.widget( "ui.osw_activityview", {
 
 		}, null, "message", "headline", null, null, null);
 
+		this.options.connection.osw.callbacks.received_activity.add( this._osw_activity_callback, this );
+
 	},
 	_init: function() {
 
@@ -162,8 +165,7 @@ $.widget( "ui.osw_activityview", {
 	refresh: function() {
 		$(".activities", this).html("");
 
-		this.options.connection.osw.activities.get('harlan@osw1.soashable.com',
-			$.proxy(this._osw_activity_callback, this));
+		this.options.connection.osw.inbox();
 	},
 
 
@@ -188,7 +190,7 @@ $.widget( "ui.osw_activityview", {
 		}, this));
 	},
 
-	_osw_activity_callback: function( act, options ) {
+	_osw_activity_callback: function( act ) {
 		this.append( act );
 	}
 });

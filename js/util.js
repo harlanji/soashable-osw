@@ -5,12 +5,19 @@ function delegate() {
 delegate.prototype = {
 	_fn : {},
 
-	add: function(fn) {
+	add: function(fn, context) {
 		var handle;
 
 		do {
 			handle = Math.floor(Math.random() * 0x7fffffff);
-		} while( this._fn.hasOwnProperty(k) );
+		} while( this._fn.hasOwnProperty(handle) );
+
+		if( context ) {
+			var wrapped = fn;
+			fn = function() {
+				wrapped.apply( context, arguments );
+			}
+		}
 
 		this._fn[ handle ] = fn;
 

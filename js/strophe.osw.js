@@ -80,25 +80,35 @@ var self = {
 		conn.addHandler(received_message, null, 'message', null, null,  null); 
 	},
 
-	activities: {
-		get: function(who, cb) {
-
-			var options = {
-				'who' : who,
-				'cb' : cb
-			}
-
-			// jid,service,node,ok_callback,error_back
-			connection.pubsub.items( connection.jid, 
-				options.who, 
-				self.JQUERY_NAMESPACES.microblog, 
-				function(iq) {
-					received_osw_activities(iq, options);
-				}, 
-				received_osw_activities_error
-			);
-		}
+	callbacks: {
+		'received_activity' : new delegate(),
 	},
+
+	activities: function(who){
+		// FIXME should !who get inbox() instead?
+
+		connection.pubsub.items( connection.jid, 
+			who, 
+			self.JQUERY_NAMESPACES.microblog, 
+			this._receivedActivities, 
+			this._receivedActivitiesError
+		);
+	},
+
+	_receivedActivities: function(iq) {
+		$(iq).xmlns( self.JQUERY_NAMESPACES, function() {
+			this.find("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry").each(function(i, entry) {
+				var activity = self._parseActivity( entry );
+
+				self.callbacks.received_activity.trigger( activity );
+			});
+		});
+	},
+
+	_receivedActivitiesError: function(iq) {
+		
+	},
+
 
 	publishActivity: function(status) {
 		var pubId = connection.getUniqueId("publishnode");
@@ -205,6 +215,10 @@ var self = {
      * List the inbox of activities for the current user.
      **/
     inbox : function() {
+
+		// FIXME logger
+		var logger = connection.logger;
+
 		var sub = $iq({
 			'from' : connection.jid, 
 			'type' : 'get'
@@ -213,11 +227,25 @@ var self = {
 		}).c('items', {
 			'node' : 'http://onesocialweb.org/spec/1.0/inbox'
 		});
-		connection.sendIQ(sub.tree(), callbacks.activities, function(st) {
+		connection.sendIQ(sub.tree(), self._receivedInbox, function(st) {
 			logger.error('Unable to send IQ to receive activities');
 			logger.debug(st);
 		});
     },
+
+	_receivedInbox: function(iq) {
+		$(iq).xmlns( self.JQUERY_NAMESPACES, function() {
+			this.find("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry").each(function(i, entry) {
+				var activity = self._parseActivity( entry );
+
+				self.callbacks.received_activity.trigger( activity );
+			});
+		});
+	},
+
+	_receivedInboxError: function(iq) {
+		
+	},
 
 	/**
 	 * Get a list of all users subscribed to the PEP microblog.
@@ -240,27 +268,6 @@ var self = {
 	}
 
 };
-
-
-
-
-function received_osw_activities(iq, options) {
-	log('Got OSW activities!');
-
-	$(iq).xmlns( self.JQUERY_NAMESPACES, function() {
-		this.find("pubsub|pubsub > pubsub|items > pubsub|item > atom|entry").each(function(i, entry) {
-			var activity = self._parseActivity( entry );
-
-			options.cb(activity, options);
-		});
-	});
-	
-}
-
-
-function received_osw_activities_error(iq) {
-	log('Error getting OSW activities :(');
-}
 
 function received_message(msg) {
     var to = msg.getAttribute('to');
