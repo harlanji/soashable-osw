@@ -292,12 +292,6 @@ var self = {
 
 	},
 
-
-// TODO make this stuff fit the format 
-
-
-
-
     /**
      * Function: follow
      *
@@ -309,24 +303,17 @@ var self = {
      * callback - A function which is called when the 'follow' request is successful
      **/
     follow : function(jid, callback) {
-		logger.info('Requesting to follow: ' + jid);
-		connection.sendIQ($iq({
-			'from': connection.jid, 
-			'type': 'set',
-			'to': jid
-		}).c('pubsub', { 
-			'xmlns': OneSocialWeb.SCHEMA.PUBSUB
-		}).c('subscribe', { 
-			'xmlns': OneSocialWeb.SCHEMA.PUBSUB,
-			'node': OneSocialWeb.XMLNS.MICROBLOG,
-			'jid' : Strophe.getBareJidFromJid(connection.jid)
-		}).tree(), function(stanza) {
-			logger.info("Subscribe request complete");
-			logger.debug(stanza);
-			callback();
-		}, function(stanza) {
-			logger.info("Subscribe request unsuccssful");
-			logger.debug(stanza);
+		logger.info('Requesting to follow: ' + jid)
+
+		connection.pubsub.subscribe( jid, jid, null, OneSocialWeb.XMLNS.MICROBLOG, null, function(stanza) {
+			if($(stanza).attr('type') == 'result') {
+				logger.info("Subscribe request complete");
+				logger.debug(stanza);
+				callback();
+			} else {
+				logger.info("Subscribe request unsuccssful");
+				logger.debug(stanza);
+			}
 		});
     },
 
@@ -342,23 +329,16 @@ var self = {
      **/
     unfollow : function(jid, callback) {
 		logger.info('Requesting to unfollow: ' + jid);
-		connection.sendIQ($iq({
-			'from': connection.jid, 
-			'type': 'set',
-			'to': jid
-		}).c('pubsub', { 
-			'xmlns': OneSocialWeb.SCHEMA.PUBSUB
-		}).c('unsubscribe', { 
-			'xmlns': OneSocialWeb.SCHEMA.PUBSUB,
-			'node': OneSocialWeb.XMLNS.MICROBLOG,
-			'jid' : Strophe.getBareJidFromJid(connection.jid)
-		}).tree(), function(stanza) {
-			logger.info("Unsubscribe request complete");
-			logger.debug(stanza);
-			callback();
-		}, function(stanza) {
-			logger.info("Unsubscribe request unsuccssful");
-			logger.debug(stanza);
+
+		connection.pubsub.unsubscribe( jid, jid, OneSocialWeb.XMLNS.MICROBLOG, function(stanza) {
+			if($(stanza).attr('type') == 'result') {
+				logger.info("Unsubscribe request complete");
+				logger.debug(stanza);
+				callback();
+			} else {
+				logger.info("Unsubscribe request unsuccssful");
+				logger.debug(stanza);
+			}
 		});
     },
 
@@ -373,20 +353,8 @@ var self = {
      **/
     add_contact : function(jid) {
 		logger.info('Adding contact ' + jid);
-		// IQ message which adds the contact to the roster
-		connection.sendIQ($iq({
-			'from': connection.jid,
-			'type': 'set'
-		}).c('item', {
-			'jid': jid,
-			'name': jid
-		}).c('group').t('MyBuddies'));
-		// Send a subscription request to a user
-		connection.send($pres({
-			'from': connection.jid,
-			'to': jid,
-			'type': 'subscribe'
-		}));	    
+		connection.roster.update(jid, jid, ['MyBuddies']);
+		connection.roster.subscribe(jid);      
     },
 
     /**
@@ -399,19 +367,8 @@ var self = {
      * jid - The Jabber identifier of the user requesting to be a contact
      **/
     confirm_contact : function(jid) {
-		connection.sendIQ($iq({
-			'type': 'set'
-		}).c('query', {
-			'xmlns': OneSocialWeb.XMLNS.ROSTER
-		}).c('item', {
-			'jid': jid,
-			'name': jid
-		}).c('group').t('MyBuddies'));
-		connection.send($pres({
-			'from': connection.jid,
-			'to': jid,
-			'type': 'subscribed'
-		}));	    
+		connection.roster.update(jid, jid, ['MyBuddies']);
+		connection.roster.authorize(jid);    
     },
 
     /**
@@ -452,20 +409,7 @@ var self = {
      * groups - A list of group names
      **/
     update_contact : function(jid, name, groups) {
-		var iq = $iq({
-			'type': 'set',
-			'from': connection.jid
-		}).c('query', {
-			'xmlns': OneSocialWeb.XMLNS.ROSTER
-		}).c('item', {
-			'jid' : jid,
-			'name' : name, 
-			'subscription' : 'both'
-		});
-		$.each(groups, function(index, group) {
-			iq.c('group').t(group).up();
-		});
-		connection.sendIQ(iq);
+		connection.roster.update(jid, name, groups);
     },
 
     edit_profile : function(nickname) {
