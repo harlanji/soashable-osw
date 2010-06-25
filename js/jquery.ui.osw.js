@@ -1,6 +1,28 @@
 (function($) {
 
 /**
+ * Find all properties of 'object' of the format ':event:query' and .bind
+ * the associated function to an element that matches 'query' for 'event'.
+ *
+ * See ui.osw_conversation[':click:.send_message'] for an example.
+ *
+ * FIXME this should be a widget mixin or something.
+ *
+ */
+$.osw_controller = function( widget ) {
+
+	// bind all events
+	$.each(widget, $.proxy(function(k, v) {
+		var parts = k.split(':', 3);
+		if( parts.length == 3 && parts[0] == '' ) {
+			this.element.find( parts[2] ).bind( parts[1], $.proxy( v, this ) );
+		}
+	}, widget));
+}
+
+
+
+/**
  * This is a generic conversation view. It registers message and presence handlers
  * upon creation, which cause any relevent events to be displayed right away.
  * 
@@ -47,13 +69,7 @@ $.widget( "ui.osw_conversation", {
 
 		this.element.data('handlers', handlers);
 
-		// bind all events
-		$.each(this, $.proxy(function(k, v) {
-			var parts = k.split(':', 3);
-			if( parts.length == 3 && parts[0] == '' ) {
-				this.element.find( parts[2] ).bind( parts[1], $.proxy( v, this ) );
-			}
-		}, this));
+		$.osw_controller( this );
 	},
 
 	'destroy' : function() {
@@ -64,7 +80,6 @@ $.widget( "ui.osw_conversation", {
 		}, this));
 	},
 
-	// TODO document and generalize this controller format
 	':click:.send_message' : function(event, ui) {
 		var body = this.element.find(".outgoing_text").val();
 
@@ -192,23 +207,20 @@ $.widget("ui.osw_activitypublish", {
 	'_create' : function() {
 		$(this.element).jqoteapp(this.options.template, {});
 
-		// FIXME use controller method from osw_conversation
-		var self = this;
-		$(this.element).find('.form').submit(function() {
-			try {
-				var status = $(this).find(".status").val();
-				$(this).find(".status").val('');
-
-				self.options.connection.osw.publishActivity( status );
-			} finally {
-				return false;
-			}
-		});
+		$.osw_controller( this );
 	},
 
-	'_clickedPublish' : function() {
+	':submit:.form' : function() {
+		try {
+			var status = $(this.element).find(".status").val();
+			$(this.element).find(".status").val('');
 
-	}
+			this.options.connection.osw.publishActivity( status );
+		} finally {
+			return false;
+		}
+	},
+
 });
 
 
