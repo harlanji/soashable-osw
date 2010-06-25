@@ -40,7 +40,7 @@ function connection_event(status, condition)
 
 		// TODO abstract widget and dialog integration.
 		$("<div/>").appendTo( 'body' )
-			.soashable_conversation({
+			.osw_conversation({
 				'partner' : 'harlan@osw1.soashable.com',
 				'connection' : connection
 			})
