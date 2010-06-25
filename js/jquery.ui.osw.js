@@ -40,8 +40,8 @@ $.widget( "ui.osw_conversation", {
 
 		// register all protocol handlers
 		var handlers = [
-			//this.options.connection.addHandler( this._messageReceived, null, "message", "chat", null, null, null),
-			//this.options.connection.addHandler( this._presenceReceived, null, "presence", null, null, null, null)
+			this.options.connection.addHandler( $.proxy(this._messageReceived, this), null, "message", "chat", null, null, null),
+			this.options.connection.addHandler( $.proxy(this._presenceReceived, this), null, "presence", null, null, null, null)
 		];
 
 		this.element.data('handlers', handlers);
@@ -68,22 +68,32 @@ $.widget( "ui.osw_conversation", {
 
 		var msg = $msg({
 			'to' : this.options.partner,
-			'body' : body,
 			'type' : 'chat'
-		});
+			}).c('body').t( body );
 
-		this.options.connection.send(msg);
+		this.options.connection.send( msg.tree() );
 
 		// cleanup.
+		this.element.find( '.incoming_text' ).append( '<div>You: ' + body + '</div>' );
 		this.element.find(".outgoing_text").val('');
 	},
 
 	'_messageReceived' : function(msg) {
-
+		try {
+			// FIXME script injection may be possible.
+			this.element.find( '.incoming_text' ).append( '<div>Them: ' + $(msg).find('body').text()+'</div>' );
+		} finally {
+			return true;
+		}
 	},
 
 	'_presenceReceived' : function(pres) {
-
+		try {
+			// FIXME script injection may be possible.
+			this.element.find( '.incoming_text' ).append( '<div>Presence: ' + $(pres).attr('type')+'</div>' );
+		} finally {
+			return true;
+		}
 	}
 
 });

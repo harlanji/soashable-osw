@@ -41,7 +41,7 @@ function connection_event(status, condition)
 		// TODO abstract widget and dialog integration.
 		$("<div/>").appendTo( 'body' )
 			.soashable_im_window({
-				'partner' : 'harlan@osw1.soashable.com',
+				'partner' : connection.jid,
 				'connection' : connection,
 				'autoOpen' : true
 			});
