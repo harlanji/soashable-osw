@@ -52,6 +52,10 @@ $aclr.subject = {
 var connection;
 
 
+
+var logger;
+
+
 var self = {
 	JQUERY_NAMESPACES : {
 		'httpbind' : 'http://jabber.org/protocol/httpbind',
@@ -75,6 +79,9 @@ var self = {
 
 	init: function(conn) {
 		connection = conn;
+
+		// FIXME logger
+		logger = connection.logger
 
 		$.each( self.JQUERY_NAMESPACES, function(k,v) {
 			Strophe.addNamespace( k, v );
@@ -237,10 +244,6 @@ var self = {
      * List the inbox of activities for the current user.
      **/
     inbox : function() {
-
-		// FIXME logger
-		var logger = connection.logger;
-
 		var sub = $iq({
 			'from' : connection.jid, 
 			'type' : 'get'
@@ -287,7 +290,198 @@ var self = {
 
 	statusChanged: function (status, condition) {
 
-	}
+	},
+
+
+// TODO make this stuff fit the format 
+
+
+
+
+    /**
+     * Function: follow
+     *
+     * Subscribes the current user to the activity stream of the specified user.
+     *
+     * Parameters:
+     *
+     * jid - The Jabber identifier of the user to 'follow'
+     * callback - A function which is called when the 'follow' request is successful
+     **/
+    follow : function(jid, callback) {
+		logger.info('Requesting to follow: ' + jid);
+		connection.sendIQ($iq({
+			'from': connection.jid, 
+			'type': 'set',
+			'to': jid
+		}).c('pubsub', { 
+			'xmlns': OneSocialWeb.SCHEMA.PUBSUB
+		}).c('subscribe', { 
+			'xmlns': OneSocialWeb.SCHEMA.PUBSUB,
+			'node': OneSocialWeb.XMLNS.MICROBLOG,
+			'jid' : Strophe.getBareJidFromJid(connection.jid)
+		}).tree(), function(stanza) {
+			logger.info("Subscribe request complete");
+			logger.debug(stanza);
+			callback();
+		}, function(stanza) {
+			logger.info("Subscribe request unsuccssful");
+			logger.debug(stanza);
+		});
+    },
+
+    /**
+     * Function: unfollow
+     *
+     * Unsubscribes the current user to the activity stream of the specified user.
+     *
+     * Parameters:
+     *
+     * jid - The Jabber identifier of the user to 'follow'
+     * callback - A function which is called when the 'unfollow' request is successful
+     **/
+    unfollow : function(jid, callback) {
+		logger.info('Requesting to unfollow: ' + jid);
+		connection.sendIQ($iq({
+			'from': connection.jid, 
+			'type': 'set',
+			'to': jid
+		}).c('pubsub', { 
+			'xmlns': OneSocialWeb.SCHEMA.PUBSUB
+		}).c('unsubscribe', { 
+			'xmlns': OneSocialWeb.SCHEMA.PUBSUB,
+			'node': OneSocialWeb.XMLNS.MICROBLOG,
+			'jid' : Strophe.getBareJidFromJid(connection.jid)
+		}).tree(), function(stanza) {
+			logger.info("Unsubscribe request complete");
+			logger.debug(stanza);
+			callback();
+		}, function(stanza) {
+			logger.info("Unsubscribe request unsuccssful");
+			logger.debug(stanza);
+		});
+    },
+
+    /**
+     * Function: add_contact
+     *
+     * Adds a new contact to the rooster
+     *
+     * Parameters:
+     * 
+     * jid - The Jabber identifier of the user to add
+     **/
+    add_contact : function(jid) {
+		logger.info('Adding contact ' + jid);
+		// IQ message which adds the contact to the roster
+		connection.sendIQ($iq({
+			'from': connection.jid,
+			'type': 'set'
+		}).c('item', {
+			'jid': jid,
+			'name': jid
+		}).c('group').t('MyBuddies'));
+		// Send a subscription request to a user
+		connection.send($pres({
+			'from': connection.jid,
+			'to': jid,
+			'type': 'subscribe'
+		}));	    
+    },
+
+    /**
+     * Function: confirm_contact
+     *
+     * Confirm the addition of a contact 
+     *
+     * Parameters:
+     *
+     * jid - The Jabber identifier of the user requesting to be a contact
+     **/
+    confirm_contact : function(jid) {
+		connection.sendIQ($iq({
+			'type': 'set'
+		}).c('query', {
+			'xmlns': OneSocialWeb.XMLNS.ROSTER
+		}).c('item', {
+			'jid': jid,
+			'name': jid
+		}).c('group').t('MyBuddies'));
+		connection.send($pres({
+			'from': connection.jid,
+			'to': jid,
+			'type': 'subscribed'
+		}));	    
+    },
+
+    /**
+     * Function: vcard
+     *
+     * Request a VCARD of a specified user.
+     *
+     * Parameters:
+     * 
+     * jid - The Jabber Identifier of the user you wish to request the VCARD
+     **/
+    vcard : function(jid) {
+		connection.sendIQ($iq({
+			'type': 'get',
+			'to': jid,
+			'xmlns': OneSocialWeb.XMLNS.CLIENT
+		}).c('vCard', {
+			'xmlns': OneSocialWeb.XMLNS.VCARDTEMP
+		}), function(stanza) {
+				var photo;
+				photo = $(stanza).find('PHOTO BINVAL');
+				if (photo.length > 0) {
+				photo = $(photo[0]).text();
+				options.callback.avatar(jid, photo);
+			}
+		});
+    },
+
+    /**
+     * Function: update_contact
+     *
+     * Updates a contact in the rooster
+     *
+     * Parameters: 
+     * 
+     * jid - The Jabber identifier of the user you wish to update
+     * name - Name of the contact
+     * groups - A list of group names
+     **/
+    update_contact : function(jid, name, groups) {
+		var iq = $iq({
+			'type': 'set',
+			'from': connection.jid
+		}).c('query', {
+			'xmlns': OneSocialWeb.XMLNS.ROSTER
+		}).c('item', {
+			'jid' : jid,
+			'name' : name, 
+			'subscription' : 'both'
+		});
+		$.each(groups, function(index, group) {
+			iq.c('group').t(group).up();
+		});
+		connection.sendIQ(iq);
+    },
+
+    edit_profile : function(nickname) {
+		connection.sendIQ($iq({
+			'type': 'set',
+			'from': connection.jid,
+		}).c('pubsub', {
+			'xmlns': OneSocialWeb.SCHEMA.PUBSUB
+		}).c('publish', {
+			'node' : OneSocialWeb.SCHEMA.NICKNAME
+		}).c('item', {
+			'id': 0
+		}).c('nick', {
+			'xmlns' : OneSocialWeb.SCHEMA.NICKNAME
+		}).t(nickname));
+    },
 
 };
 
