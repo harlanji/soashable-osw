@@ -30,5 +30,24 @@ $.widget( "ui.soashable_chatbar", {
 });
 
 
+$.widget( "ui.soashable_im_window", $.ui.dialog, {
+	options: {
+		'partner' : null,
+		'connection' : null
+	},
+
+	_create: function() {
+		$.ui.dialog.prototype._create.call(this);
+
+		this.option('title', 'Conversation with ' + this.options.partner);
+
+		this.element.osw_conversation({
+			'partner' : this.options.partner,
+			'connection' : this.options.connection
+		});
+	}
+});
+
+
 })(jQuery);
 

@@ -40,13 +40,10 @@ function connection_event(status, condition)
 
 		// TODO abstract widget and dialog integration.
 		$("<div/>").appendTo( 'body' )
-			.osw_conversation({
+			.soashable_im_window({
 				'partner' : 'harlan@osw1.soashable.com',
-				'connection' : connection
-			})
-			.dialog({
-				'autoOpen' : true, 
-				'title' : 'Conversation with harlan@osw1.soashable.com'
+				'connection' : connection,
+				'autoOpen' : true
 			});
     }
 } 
