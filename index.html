@@ -76,13 +76,51 @@
 
 <script type="text/x-jqote-template" id="template_ui_osw_conversation">
 <![CDATA[
-<div class="soashable_im" >
+<div class="osw_conversation" >
 	<div class="incoming_text"></div>
 	<textarea class="outgoing_text">Hello, <%= this.partner %>!</textarea>
 	<button class="send_message">Send Message</button>
 </div>
 ]]>
 </script>
+
+
+<script type="text/x-jqote-template" id="template_ui_osw_activitypublish">
+<![CDATA[
+<div class="osw_activitypublish">
+	<form class="form">
+		<input type="text" class="status" name="status"/>
+		<input type="submit" class="submit" name="submit" value="submit"/>
+	</form>
+</div>
+]]>
+</script>
+
+
+
+
+
+<script type="text/x-jqote-template" id="template_ui_osw_activityview">
+<![CDATA[
+<div class="activities">
+</div>
+]]>
+</script>
+
+<script type="text/x-jqote-template" id="template_ui_osw_activityview_activity">
+<![CDATA[
+<div class="activity" id="<%= this.id %>">
+	<p>
+	Activity by <%= this.act.name %> (<%= this.act.jid %>): <%= this.act.title %>. 
+	contains <%= this.act.objects.length %> objects 
+	and <%= this.act.acl.length %> ACL rules.
+	</p>
+
+	<div class="objects"></div>
+</div>
+]]>
+</script>
+
 
 
 </div>

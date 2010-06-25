@@ -170,18 +170,17 @@ var self = {
 			}).cnode( pubsubEl )
 			.tree();
 
-		console.dirxml( iqEl );
+		//console.dirxml( iqEl );
 
 
 		connection.sendIQ( iqEl, function(iq) {
-			alert( "posted successfully");
 
-			console.dirxml( iq );
+			//console.dirxml( iq );
 		},
 		function(iq) {
 			alert("post error");
 
-			console.dirxml( iq );
+			//console.dirxml( iq );
 		});
 
 	},
