@@ -90,15 +90,24 @@ $.widget( "ui.osw_conversation", {
 
 		this.options.connection.send( msg.tree() );
 
+		this.appendMessage('You: ' + body );	
+
+
 		// cleanup.
-		this.element.find( '.incoming_text' ).append( $('<div>You: ' + body + '</div>').sanitizeHtml() );
 		this.element.find(".outgoing_text").val('');
+	},
+
+	// FIXME this doesn't scroll right.
+	'appendMessage': function(html) {
+		var incomingText = this.element.find( '.incoming_text' );
+		incomingText.append( $('<div>' + html + '</div>').sanitizeHtml() ); // NOTE .wrap() doesn't work on text
+		//incomingText.animate({ scrollTop: incomingText.attr("scrollHeight") - incomingText.height() }, 500);
+		incomingText.scrollTop( incomingText.attr("scrollHeight") - incomingText.height() );
 	},
 
 	'_messageReceived' : function(msg) {
 		try {
-			// FIXME script injection may be possible.
-			this.element.find( '.incoming_text' ).append( '<div>Them: ' + $(msg).find('body').text()+'</div>' );
+			this.appendMessage('Them: ' + $(msg).find('body').text() );	
 		} finally {
 			return true;
 		}
@@ -106,8 +115,7 @@ $.widget( "ui.osw_conversation", {
 
 	'_presenceReceived' : function(pres) {
 		try {
-			// FIXME script injection may be possible.
-			this.element.find( '.incoming_text' ).append( '<div>Presence: ' + $(pres).attr('type')+'</div>' );
+			this.appendMessage( 'Presence: ' + $(pres).attr('type') );
 		} finally {
 			return true;
 		}
