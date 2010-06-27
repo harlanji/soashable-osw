@@ -93,9 +93,12 @@ $(document).ready(function () {
 
 					jid = $('#jid', event.target).get(0).value;
 
-					connection.connect(jid,
+					connection.connect(jid, 'osw1.soashable.com',
 						$('#pass', event.target).get(0).value,
 						connection_event);
+
+					jid = connection.jid;
+
 				} else {
 					button.value = 'connect';
 					connection.disconnect();

@@ -127,7 +127,7 @@ $.widget( "ui.osw_roster", {
 	
 	_create: function() {
 
-		this.options.connection.roster.registerCallback( this._received_roster );
+		this.options.connection.roster.registerCallback( $.proxy( this._receivedRoster, this ) );
 	},
 	_init: function() {
 		$(this.element).jqotesub( this._template, {} );
@@ -161,8 +161,14 @@ $.widget( "ui.osw_roster", {
 		return $( '#' + this._entryElId(group, jid) );
 	},
 
-	_received_roster: function(items) {
-		alert("got roster");
+	_receivedRoster: function(items, item) {
+		try {
+			if( !item ) { return; }
+
+			osw.util.logger.debug( "Got roster item update" );
+		} finally {
+			return true;
+		}
 	},
 
 	_groupElId: function(group) {
@@ -215,7 +221,7 @@ $.widget("ui.osw_activitypublish", {
 			var status = $(this.element).find(".status").val();
 			$(this.element).find(".status").val('');
 
-			this.options.connection.osw.publishActivity( status );
+			this.options.connection.osw.publishActivity( osw.activity.create( status, [],  [ osw.acl.rule('grant', 'view', 'everyone') ]) );
 		} finally {
 			return false;
 		}
