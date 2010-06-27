@@ -91,7 +91,7 @@ $.widget( "ui.osw_conversation", {
 		this.options.connection.send( msg.tree() );
 
 		// cleanup.
-		this.element.find( '.incoming_text' ).append( '<div>You: ' + body + '</div>' );
+		this.element.find( '.incoming_text' ).append( $('<div>You: ' + body + '</div>').sanitizeHtml() );
 		this.element.find(".outgoing_text").val('');
 	},
 
@@ -427,59 +427,6 @@ $.widget('ui.osw_aclrulebuilder', {
 
 });
 
-
-
-/*
-	Function: sanitizeChildren
-
-		Filter all children down to only allowed tags. Keeps text and positioning
-		correct.
-
-	Parameters:
-		root - A DOM node or anything that will work in a jQuery selector. This
-				node is not sanitized, only its children.
-		allowTags - An array of tags to allow.
-*/
-
-function sanitizeChildren( root, allowTags ) {
-	$(root).children().each(function(i, child) {
-		sanitizeChildren( child, allowTags );
-
-		if( $.inArray( child.localName, allowTags ) < 0 ) {
-			$(child).contents().each(function(j, content) {
-				$(content).remove().insertBefore(child);
-			});
-			$(child).remove();
-		}
-	});
-};
-
-
-/*
-	Function: sanitizeHtml
-
-		Filter all children down to only allowed tags. Keeps text and positioning
-		correct.
-
-	Parameters:
-		root - A DOM node or anything that will work in a jQuery selector. This
-				node is not sanitized, only its children.
-		allowTags - An array of tags to allow. default is: i, em, b, strong, u, font.
-*/
-
-
-$.fn.sanitizeHtml = function(allowTags) {
-	allowTags = allowTags || ['i', 'em', 'b', 'strong', 'u', 'font'];
-
-	var root = $('<span class="sanitized"/>');
-	root.append( this );
-
-	sanitizeChildren( root, allowTags );
-
-	$(this).replaceWith( root );
-
-	return $(root);
-}
 
 })(jQuery);
 
