@@ -322,5 +322,103 @@ $.widget( "ui.osw_activityview", {
 	}
 });
 
+
+/*
+Class: ui.osw_aclrulebuilder
+
+	TODO document me.
+*/
+$.widget('ui.osw_aclrulebuilder', {
+	'options' : {
+		'connection' : null,
+		'action' : 'view'
+	},
+
+	'_create' : function() {
+		var widget = this;
+
+		// permission selector
+		var permissionSel = $('<select class="permission"></select>');
+		$.each(osw.acl.permission, function(k, perm) {
+			var opt = $('<option/>').val(perm).text(k);
+			
+			permissionSel.append( opt );
+		});
+		this.element.append(permissionSel);
+
+		// subject type selector
+		var subjectSel = $('<select class="subjectType"></select>');
+		$.each(osw.acl.subjectType, function(k, st) {
+			var opt = $('<option/>').val(st).text(k);
+			
+			subjectSel.append( opt );
+		});
+		
+		// subject selector
+		select.change(function(event) {
+			var subjectType = $(event.target).find(':selected').val();
+			var subjects = widget._calculateList( subjectType );
+
+			var subjectSel;
+			if( subjects.length > 0 ) {
+				subjectSel = $('<select class="subject"></select>');
+				$.each(subjects, function(i, subject) {
+					var opt = $('<option/>').val(subject).text(subject);
+					subjectSel.append( opt );
+				});
+			} else {
+				subjectSel = $('<span class="subject"></span>');				
+			}
+
+			$(widget.element).find('.subject').replaceWith( subjectSel );
+		});
+		this.element.append(subjectSel);
+
+		// placeholder for subject
+		this.element.append( $('<span class="subject"></span>') );
+
+
+		// accept button
+		var acceptBtn = $('<button>Accept</button>');
+		acceptBtn.click(function() {
+			// FIXME make an event or something
+			alert( Strophe.serialize( $(widget).osw_aclrulebuilder('rule') ) );
+		});
+		this.element.append(acceptBtn);
+	},
+
+	'rule' : function() {
+		var permission = $(this.element).find('.permission > :selected').val();
+		var subjectType = $(this.element).find('.subjectType > :selected').val();
+		var subject = $(this.element).find('.subject > :selected').val();
+
+		return osw.acl.rule( permission, this.options.action, subjectType, subject ); 
+	},
+
+
+	'_calculateList': function(subjectType) {
+		switch(subjectType) {
+			case 'user':
+			case osw.acl.subjectType.user:
+				return $.map(this.options.connection.roster.items, function(item) {
+					return item.jid;
+				});
+				break;
+
+			case 'group':
+			case osw.acl.subjectType.group:
+				// note: jQuery.map auto-flattens results.
+				return $.unique( $.map(this.options.connection.roster.items, function(item) {
+					return item.groups;
+				}) );
+				break;
+
+			default:
+				return [];
+		}
+	}
+
+});
+
 })(jQuery);
 
