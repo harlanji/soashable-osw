@@ -213,6 +213,10 @@ $.widget("ui.osw_activitypublish", {
 	'_create' : function() {
 		$(this.element).jqoteapp(this.options.template, {});
 
+		$(this.element).find('.aclrule').osw_aclrulebuilder({
+			'connection' : this.options.connection
+		});
+
 		$.osw_controller( this );
 	},
 
@@ -221,7 +225,9 @@ $.widget("ui.osw_activitypublish", {
 			var status = $(this.element).find(".status").val();
 			$(this.element).find(".status").val('');
 
-			this.options.connection.osw.publishActivity( osw.activity.create( status, [],  [ osw.acl.rule('grant', 'view', 'everyone') ]) );
+			var rule = $(this.element).find(".aclrule").osw_aclrulebuilder('rule');
+
+			this.options.connection.osw.publishActivity( osw.activity.create( status, [],  [ rule ]) );
 		} finally {
 			return false;
 		}
@@ -347,15 +353,15 @@ $.widget('ui.osw_aclrulebuilder', {
 		this.element.append(permissionSel);
 
 		// subject type selector
-		var subjectSel = $('<select class="subjectType"></select>');
+		var subjectTypeSel = $('<select class="subjectType"></select>');
 		$.each(osw.acl.subjectType, function(k, st) {
 			var opt = $('<option/>').val(st).text(k);
 			
-			subjectSel.append( opt );
+			subjectTypeSel.append( opt );
 		});
 		
 		// subject selector
-		select.change(function(event) {
+		subjectTypeSel.change(function(event) {
 			var subjectType = $(event.target).find(':selected').val();
 			var subjects = widget._calculateList( subjectType );
 
@@ -372,12 +378,12 @@ $.widget('ui.osw_aclrulebuilder', {
 
 			$(widget.element).find('.subject').replaceWith( subjectSel );
 		});
-		this.element.append(subjectSel);
+		this.element.append(subjectTypeSel);
 
 		// placeholder for subject
 		this.element.append( $('<span class="subject"></span>') );
 
-
+		/*
 		// accept button
 		var acceptBtn = $('<button>Accept</button>');
 		acceptBtn.click(function() {
@@ -385,6 +391,7 @@ $.widget('ui.osw_aclrulebuilder', {
 			alert( Strophe.serialize( $(widget).osw_aclrulebuilder('rule') ) );
 		});
 		this.element.append(acceptBtn);
+		*/
 	},
 
 	'rule' : function() {
