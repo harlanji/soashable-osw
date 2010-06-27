@@ -31,6 +31,8 @@ function connection_event(status, condition)
 
 		connection.send($pres().tree());
 
+		connection.roster.get( function() {} );
+
 		$("#activities .activity-view").osw_activityview('refresh');
 		$("#activities").dialog('open');
 
