@@ -2,11 +2,21 @@ body {
   font-size: 12px;
 }
 
-#roster li.contact ul.groups {
-  font-size: 0.8em
+#roster ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-#roster li.contact .action {
+#roster ul li.contact ul.groups {
+  list-style-type: square;
+  padding: 0 0 0 2em;
+}
+
+#roster ul li.contact ul.groups li {
+  font-size: 0.8em;
+}
+
+#roster ul li.contact .action {
   font-size: 0.8em;
   padding: 0 0.5em;
   cursor: pointer
