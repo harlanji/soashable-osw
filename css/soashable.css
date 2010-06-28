@@ -1,0 +1,13 @@
+body {
+  font-size: 12px;
+}
+
+#roster li.contact ul.groups {
+  font-size: 0.8em
+}
+
+#roster li.contact .action {
+  font-size: 0.8em;
+  padding: 0 0.5em;
+  cursor: pointer
+}
