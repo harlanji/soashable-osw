@@ -1,0 +1,147 @@
+<html>
+<head>
+	<title>Soashable OSW - Chat Mockup</title>
+	<script type="text/javascript" src="../js/external/jquery-1.4.2.js"></script>
+
+	<script type="text/javascript" src="../js/external/jquery-ui-1.8.2.custom.min.js"></script>
+	<link rel="stylesheet" href="../css/smoothness/jquery-ui-1.8.2.custom.css" />
+	<style type="text/css">
+
+
+
+.dock {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+}
+
+.tab {
+	width: 225px;
+	margin: 0px;
+	padding: 0px;
+
+	bottom: 0;
+	position: relative;
+}
+
+.tab .content {
+	width: 225px;
+	height: 400px;
+	overflow-x: none;
+	overflow-y: auto;
+
+	border: 1px solid black;
+
+	position: absolute;
+	bottom: 30px;
+	right: 0;
+} 
+
+.tab button {
+	width: 175px;
+	height: 30px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+.tab.minimized .content {
+	visibility: hidden;
+}
+
+.tab.normal .content {
+	visibility: visibile;
+}
+
+
+.conversation .incoming-text {
+	height: 370px;
+	margin: 0;
+	padding: 0;
+
+	bottom: 30px;
+	right: 0;
+	width: 225px;
+}
+
+.conversation .outgoing-text {
+	height: 30px;
+	margin: 0;
+	padding: 0;
+	bottom: 0;
+	right: 0;
+	width: 225px;
+}
+
+
+	</style>
+
+	<script type="text/javascript">
+
+
+
+
+$(document).ready(function() {
+	$('.dock > .tab').each(function() {
+		var tab = this;
+		var dock = $(tab).parent();
+		$(tab).find('.toggle').click(function() {
+			$(dock).find('.normal').removeClass('normal').addClass('minimized');
+			$(tab).addClass('normal').removeClass('minimized');
+		});
+	}); 
+});
+
+	</script>
+
+
+</head>
+<body>
+
+<div class="dock">
+
+
+	<div class="tab minimized" style="right: 0px">
+		
+		<div class="content controls">
+roster and controls
+		</div>
+		<button class="toggle">Chat (10)</button>
+	</div>
+
+	<div class="tab normal" style="right: 175px">
+		
+		<div class="content conversation">
+
+			<div class="incoming-text">
+incoming
+			</div>
+
+			<input type="text" class="outgoing-text" value="outgoing"/>
+
+		</div>
+		<button class="toggle">Person's Name</button>
+	</div>
+
+
+
+	<div class="tab minimized" style="right: 350px">
+		
+		<div class="content conversation">
+fdsfs
+		</div>
+		<button class="toggle">Person's Name</button>
+	</div>
+
+	<div class="tab minimized" style="right: 525px">
+		
+		<div class="content conversation">
+fdsfs
+		</div>
+		<button class="toggle">Person's Name</button>
+	</div>
+
+</div>
+
+</body>
+</html>
