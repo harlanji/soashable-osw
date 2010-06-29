@@ -1,14 +1,18 @@
 var Contact = {
-	/**
-	 * Function: has_element
-	 *
-	 * Returns true if an element exists which contains information about this contact.
-	 **/
-	has_element: function(contact) {
-	    return ($('.' + contact.element_class).length > 0);
-	},
+    /**
+     * Function: has_element
+     *
+     * Returns true if an element exists which contains information about this contact.
+     **/
+    has_element: function(contact) {
+	return ($('. ' + Contact.get_matcher(contact)).length > 0);
+    },
+    
+    get_matcher: function(contact) {
+	return Strophe.getNodeFromJid(contact.jid) + '_' +  Strophe.getDomainFromJid(contact.jid).replace(/[\-\/\.]/g,'');
+    },
 	
-    };
+};
 
 // Not used for now.
 $.widget("ui.osw_roster", {
@@ -23,10 +27,31 @@ $.widget("ui.osw_roster", {
 	this.options.connection.roster.set_callbacks({
 	    presence_subscription_request: function() {
 	    },
+	    contact_changed: function(contact) {
+		$.each($('.' + Contact.get_matcher(contact)), function(index, value) {
+		    var element = $(value);
+		    element.removeClass(function(index, className) {
+			return className.substring(0,3)==='st_';
+		    });
+		    element.addClass('st_' + contact.status);
+		});
+		$.each($('.' + Contact.get_matcher(contact) + ' .nickname'), function(index, element) {
+		    $(element).text(contact.nickname);
+		});
+		if (typeof(contact.avatar) !== 'undefined' && contact.avatar !== '') {
+		    $.each($('.' + Contact.get_matcher(contact) + ' .avatar'), function(index, element) {
+			if (typeof(contact.avatar.url) === 'undefined' || contact.avatar.url === '') {
+			    $(element).attr('src', 'data:image/png;base64,' + contact.avatar.data);
+			} else {
+			    $(element).attr('src', contact.avatar.url);
+			}
+		    });
+		}
+	    },
 	    presence_changed: function(contact) {
 		var element, group_list, contactlist_element, group_element, create_subscription_element, create_group_list_element, group_prompt_handler, create_group_element;
 		if (Contact.has_element(contact)) {
-		    Contact.update_status(contact);
+		    this.contact_changed(contact);
 		} else {
 		    create_subscription_element = function(contact) {
 			var subscription_element;
@@ -51,53 +76,41 @@ $.widget("ui.osw_roster", {
 			return subscription_element;
 		    };
 
-		    create_group_element = function(contact, name) {
-			var group_element = $(document.createElement('li'));
-			group_element.text(name);
-			// Create a remove button to this group
-			group_element.append((function() {
-			    var remove_element = $(document.createElement('span'));
-			    remove_element.text('[remove]');
-			    remove_element.data('jid', contact.jid);
-			    remove_element.addClass('action');
-			    remove_element.bind('click', {
-				contact: contact,
-				group: name
-			    }, function(event) { 
-				alert('This will remove ' + event.data.group +' from ' + event.data.contact.jid); 
-			    });
-			    return remove_element;
-			}()));
-			return group_element;
-		    };
-
-		    create_group_list_element = function(group_list, contact) {
-			$.each(contact.groups, function(index, value) {
-			    group_list.append(create_group_element(contact, value));
-			});
-		    };
-
 		    group_prompt_handler = function(event) {
 			var group_name = prompt('Enter a name of the group');
 			add_group(group_name, event.data.contact.jid);
 		    };
 
-		    contactlist_element = $(that.element);
+		    create_group_list_element = function(contact) {
+			var group_list, group_element, create_group_element;
 
-		    if (!Contact.has_element(contact)) {
-			element = $(document.createElement('li'));
-			element.addClass(contact.element_class);
-			element.addClass('contact');
-			element.append('<img src="" class="avatar"/><span class="nickname">' + contact.jid + '</span>');
-			// Create a button indicating if this contact is followed or not
-			element.append(create_subscription_element(contact));
-			
+			create_group_element = function(contact, name) {
+			    var group_element = $(document.createElement('li'));
+			    group_element.text(name);
+			    // Create a remove button to this group
+			    group_element.append((function() {
+				var remove_element = $(document.createElement('span'));
+				remove_element.text('[remove]');
+				remove_element.data('jid', contact.jid);
+				remove_element.addClass('action');
+				remove_element.bind('click', {
+				    contact: contact,
+				    group: name
+				}, function(event) { 
+				    alert('This will remove ' + event.data.group +' from ' + event.data.contact.jid); 
+				});
+				return remove_element;
+			    }()));
+			    return group_element;
+			};
+
 			// Create a list for containing the groups belonging to the contact
 			group_list = $(document.createElement('ul'));
 			group_list.addClass('groups');
-			// Populate group list for the element
-			create_group_list_element(group_list, contact);
-			
+
+			$.each(contact.groups, function(index, value) {
+			    group_list.append(create_group_element(contact, value));
+			});
 			// Add an 'add' to the group list which will add another group to the contact
 			group_element = $(document.createElement('li'));
 			group_element.text('[add]');
@@ -107,9 +120,27 @@ $.widget("ui.osw_roster", {
 			    contact: contact
 			}, group_prompt_handler);
 			group_list.append(group_element);
+			return group_list;
+		    };
+
+		    contactlist_element = $(that.element);
+		    if (!Contact.has_element(contact)) {
+			element = $(document.createElement('li'));
+			element.addClass(Contact.get_matcher(contact));
+			element.addClass('contact');
+			element.append('<img src="/soashable-osw/images/avatar_18x24.png" class="avatar"/><span class="nickname">' + contact.name + '</span>');
+			// Create a button indicating if this contact is followed or not
+			element.append(create_subscription_element(contact));
+			
+			// Populate group list for the element
+			element.append(create_group_list_element(contact));
+			
 			// Add the group list to the contact
 			element.append(group_list);
 			contactlist_element.append(element);
+			
+			// Fetch the VCard for this contact
+			connection.vcard.fetch(contact.jid);
 		    }
 		}
 	    }

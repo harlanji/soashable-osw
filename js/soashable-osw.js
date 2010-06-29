@@ -102,8 +102,8 @@ $(document).ready(function () {
 	//connection.addHandler( received_message, 'message', null, null, null, null );
 
 	// Uncomment the following lines to spy on the wire traffic.
-	//connection.rawInput = function (data) { log('RECV: ' + data); };
-	//connection.rawOutput = function (data) { log('SEND: ' + data); };
+	connection.rawInput = function (data) { console.debug('RECV: ' + data); };
+	connection.rawOutput = function (data) { console.debug('SEND: ' + data); };
 
 	// Uncomment the following line to see all the debug output.
 	//Strophe.log = function (level, msg) { log('LOG: ' + msg); };
