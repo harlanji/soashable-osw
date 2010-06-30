@@ -235,7 +235,7 @@ $.widget("ui.osw_activitypublish", {
 
 			var rule = $(this.element).find(".aclrule").osw_aclrulebuilder('rule');
 
-			this.options.connection.osw.publishActivity( osw.activity.create( status, [],  [ rule ]) );
+			this.options.connection.osw.publishActivity( $activity.create( status, [ rule ]) );
 		} finally {
 			return false;
 		}
