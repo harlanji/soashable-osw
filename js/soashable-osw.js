@@ -31,6 +31,7 @@ var connection_callback = {
 	    $('#roster .body').osw_roster('refresh');
 	    $("#activities").dialog('open');
 	    $('#login').dialog('close');
+	    $("#menu").dialog('open');
 	}
     };
 
@@ -86,6 +87,20 @@ $(document).ready(function () {
 	});
 
 
+
+    (function() {
+	$('#menu').dialog({
+	    title: 'Menu',
+	    position: ['left', 'top'],
+	    autoOpen: false,
+	    height: 300
+	});
+	$.each($('#menu button'), function(index, element) {
+	    $(element).button();
+	    if ($(element).hasClass('contacts')) {
+	    }
+	});
+    }());
 	
 
 
