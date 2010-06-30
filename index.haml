@@ -98,7 +98,7 @@
         :cdata
           <div class="activity" id="<%= this.id %>">
           <p>
-          Activity by <%= this.act.name %> (<%= this.act.jid %>): <%= this.act.title %>. 
+          <div class="contact <%= this.jid_class %>"><img class="avatar"/><span class="nickname"><%= this.act.name %></span></div>: <%= this.act.title %>. 
           contains <%= this.act.objects.length %> objects 
           and <%= this.act.acl.length %> ACL rules.
           </p>

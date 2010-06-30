@@ -232,10 +232,10 @@ $.widget( "ui.osw_activityview", {
 
 	'append' : function(act) {
 		var actId = MD5.hexdigest( act.id );		
-
 		// add the activity to the beginning of the stream
 		$(this.element).find(".activities").jqotepre(this.options.activityTemplate, {
 			id: actId,
+		    jid_class: Contact.get_matcher_from_jid(act.jid),
 			act: act
 		});
 

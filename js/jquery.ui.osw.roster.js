@@ -11,6 +11,10 @@ var Contact = {
     get_matcher: function(contact) {
 	return Strophe.getNodeFromJid(contact.jid) + '_' +  Strophe.getDomainFromJid(contact.jid).replace(/[\-\/\.]/g,'');
     },
+
+    get_matcher_from_jid: function(jid) {
+	return Strophe.getNodeFromJid(jid) + '_' +  Strophe.getDomainFromJid(jid).replace(/[\-\/\.]/g,'');
+    }
 	
 };
 
@@ -36,7 +40,7 @@ $.widget("ui.osw_roster", {
 		    element.addClass('st_' + contact.status);
 		});
 		$.each($('.' + Contact.get_matcher(contact) + ' .nickname'), function(index, element) {
-		    $(element).text(contact.nickname);
+		    $(element).html(contact.name);
 		});
 		if (typeof(contact.avatar) !== 'undefined' && contact.avatar !== '') {
 		    $.each($('.' + Contact.get_matcher(contact) + ' .avatar'), function(index, element) {
