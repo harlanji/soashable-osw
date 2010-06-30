@@ -10,6 +10,7 @@
     <script src='js/external/jquery.jv.widgetTree.js' type='text/javascript'></script>
     <script src='js/external/jquery.xmlns.js' type='text/javascript'></script>
     <script src='js/jquery.ui.osw.js' type='text/javascript'></script>
+    <script src='js/jquery.ui.osw.profile.js' type='text/javascript'></script>
     <script src='js/jquery.ui.osw.roster.js' type='text/javascript'></script>
     <script src='js/jquery.ui.soashable.js' type='text/javascript'></script>
     <script src='/strophejs/src/base64.js' type='text/javascript'></script>
@@ -45,46 +46,56 @@
     </div>
     <div class='chat-bar'></div>
     <div id='profile' style='display:none'>
-      <label class='fn'>
-        Name
-        <input class='text' />
-      </label>
-      <label class='nickname'>
-        Nickname
-        <input class='text' />
-      </label>
-      <fieldset class='n'>
-        <label class='surname'>
-          Surname
+      <form>
+        <label class='fn'>
+          Name
           <input class='text' />
         </label>
-        <label class='given'>
-          Given
+        <label class='nickname'>
+          Nickname
           <input class='text' />
         </label>
-        <label class='prefix'>
-          Prefix
-          <input class='text' />
+        <fieldset class='n'>
+          <legend>Names</legend>
+          <label class='surname'>
+            Surname
+            <input class='text' />
+          </label>
+          <label class='given'>
+            Given
+            <input class='text' />
+          </label>
+          <label class='prefix'>
+            Prefix
+            <input class='text' />
+          </label>
+          <label class='suffix'>
+            Suffix
+            <input class='text' />
+          </label>
+        </fieldset>
+        <label class='bday'>
+          Birthday
+          <input class='date' />
         </label>
-        <label class='suffix'>
-          Suffix
+        <fieldset class='email'>
+          <legend>
+            Email
+          </legend>
+          <label class='type'>
+            Type
+            <input class='text' />
+          </label>
           <input class='text' />
+        </fieldset>
+        <label class='photo'>
+          Photo
+          <input class='uri' />
         </label>
-      </fieldset>
-      <label class='bday'>
-        <input class='date' />
-      </label>
-      <fieldset class='email'>
-        <label class='type'>
-          Type
-          <input class='text' />
-        </label>
-        <input class='text' />
-      </fieldset>
-      <label class='photo'>
-        Photo
-        <input class='uri' />
-      </label>
+        <button class='save'>
+          Save
+        </button>
+      </form>
     </div>
     <div id='templates' style='display: none; visibility: hidden'>
       <script id='tpl_login' type='text/x-jqote-template'>
@@ -134,7 +145,7 @@
         <![CDATA[
             <div class="activity" id="<%= this.id %>">
             <p>
-            <div class="contact <%= this.jid_class %>"><img class="avatar"/><span class="nickname"><%= this.act.name %></span></div> (<%= this.act.jid %>): <%= this.act.title %>. 
+            <div class="contact <%= this.jid_class %>"><img class="avatar"/><span class="nickname"><%= this.act.name %></span></div>: <%= this.act.title %>. 
             contains <%= this.act.objects.length %> objects 
             and <%= this.act.acl.length %> ACL rules.
             </p>

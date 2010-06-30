@@ -29,35 +29,42 @@
       .activity-view
     .chat-bar
     #profile{:style => "display:none"}
-      %label.fn
-        Name
-        %input.text 
-      %label.nickname
-        Nickname
-        %input.text
-      %fieldset.n
-        %label.surname
-          Surname
+      %form
+        %label.fn
+          Name
+          %input.text 
+        %label.nickname
+          Nickname
           %input.text
-        %label.given
-          Given
+        %fieldset.n
+          %legend Names
+          %label.surname
+            Surname
+            %input.text
+          %label.given
+            Given
+            %input.text
+          %label.prefix
+            Prefix
+            %input.text
+          %label.suffix
+            Suffix
+            %input.text
+        %label.bday
+          Birthday
+          %input.date 
+        %fieldset.email
+          %legend
+            Email
+          %label.type
+            Type
+            %input.text
           %input.text
-        %label.prefix
-          Prefix
-          %input.text
-        %label.suffix
-          Suffix
-          %input.text
-      %label.bday
-        %input.date 
-      %fieldset.email
-        %label.type
-          Type
-          %input.text
-        %input.text
-      %label.photo
-        Photo
-        %input.uri
+        %label.photo
+          Photo
+          %input.uri
+        %button.save
+          Save
           
         
     #templates{ :style => "display: none; visibility: hidden"}

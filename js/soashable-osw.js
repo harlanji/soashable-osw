@@ -88,6 +88,9 @@ $(document).ready(function () {
 
 
 
+
+
+    /* Set up the menu dialog */
     (function() {
 	$('#menu').dialog({
 	    title: 'Menu',
@@ -98,6 +101,15 @@ $(document).ready(function () {
 	$.each($('#menu button'), function(index, element) {
 	    $(element).button();
 	    if ($(element).hasClass('contacts')) {
+		$(element).click(function() { $('#roster').dialog('open'); });
+	    } else if ($(element).hasClass('activity-stream')) {
+		$(element).click(function() { $("#activities").dialog('open'); });
+	    } else if ($(element).hasClass('profile')) {
+		$(element).click(function() { 
+		    var form = $('#profile form');
+		    form.osw_profile('refresh');
+		    $('#profile').dialog('open'); 
+		});
 	    }
 	});
     }());
@@ -106,6 +118,16 @@ $(document).ready(function () {
 
 
 	connection = new Strophe.Connection(BOSH_SERVICE);
+
+    (function() {
+	$('#profile').dialog({
+		title: 'Your Profile',
+		position: ['center', 'middle'],
+		autoOpen: false,
+		height: 400
+	});
+	$('#profile form').osw_profile({connection: connection});
+    }());
 
 	$(".chat-bar").soashable_chatbar({connection: connection});
 	$("#activities .publish-view").osw_activitypublish({connection: connection});
@@ -124,6 +146,9 @@ $(document).ready(function () {
 	//Strophe.log = function (level, msg) { log('LOG: ' + msg); };
 
 
+    (function() {
+
+    }());
 
 });
 
