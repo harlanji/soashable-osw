@@ -96,7 +96,8 @@ $(document).ready(function () {
 	    title: 'Menu',
 	    position: ['left', 'top'],
 	    autoOpen: false,
-	    height: 300
+	    height: 300,
+	    width: 180
 	});
 	$.each($('#menu button'), function(index, element) {
 	    $(element).button();
@@ -109,6 +110,10 @@ $(document).ready(function () {
 		    var form = $('#profile form');
 		    form.osw_profile('refresh');
 		    $('#profile').dialog('open'); 
+		});
+	    } else if ($(element).hasClass('disconnect')) {
+		$(element).click(function() {
+		    connection.disconnect();
 		});
 	    }
 	});
