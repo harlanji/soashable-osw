@@ -8,6 +8,7 @@ ACTIVITYSTREAMS_GIT=git://github.com/harlanji/activitystreams-js.git
 ACTIVITYSTREAMS_BRANCH=master
 ACTIVITYSTREAMS_DIR=activitystreams-js
 
+# override branches in Local.mk, which is ignored by git.
 -include Local.mk
 
 all:	deps
