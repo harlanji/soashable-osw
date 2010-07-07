@@ -28,7 +28,7 @@ var connection_callback = {
 		title: 'Contacts',
 		height: 400
 	    });
-	    $('#roster .body').osw_roster('refresh');
+//	    $('#roster .body').osw_roster('refresh');
 	    $("#activities").dialog('open');
 	    $('#login').dialog('close');
 	    $("#menu").dialog('open');
