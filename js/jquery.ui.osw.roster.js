@@ -144,7 +144,9 @@ $.widget("ui.osw_roster", {
 			contactlist_element.append(element);
 			
 			// Fetch the VCard for this contact
-			connection.vcard.fetch(contact.jid);
+			if (typeof(connection.vcard) !== 'undefined') {
+			    connection.vcard.fetch(contact.jid);
+			}
 		    }
 		}
 	    }
