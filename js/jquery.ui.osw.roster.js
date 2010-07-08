@@ -5,7 +5,7 @@ var Contact = {
      * Returns true if an element exists which contains information about this contact.
      **/
     has_element: function(contact) {
-	return ($('. ' + Contact.get_matcher(contact)).length > 0);
+	return ($('.' + Contact.get_matcher_from_jid(contact.jid)).length > 0);
     },
     
     get_matcher: function(contact) {
@@ -32,6 +32,8 @@ $.widget("ui.osw_roster", {
 	    presence_subscription_request: function() {
 	    },
 	    contact_changed: function(contact) {
+		console.info(contact.jid + ' has changed');
+		console.debug(contact);
 		$.each($('.' + Contact.get_matcher(contact)), function(index, value) {
 		    var element = $(value);
 		    element.removeClass(function(index, className) {
@@ -51,6 +53,10 @@ $.widget("ui.osw_roster", {
 			}
 		    });
 		}
+		
+		$.each($('.' + Contact.get_matcher(contact) + ' .groups .group'), function(index, value) {
+
+		});
 	    },
 	    presence_changed: function(contact) {
 		var element, group_list, contactlist_element, group_element, create_subscription_element, create_group_list_element, group_prompt_handler, create_group_element;
@@ -91,6 +97,7 @@ $.widget("ui.osw_roster", {
 			create_group_element = function(contact, name) {
 			    var group_element = $(document.createElement('li'));
 			    group_element.text(name);
+			    group_element.addClass('group');
 			    // Create a remove button to this group
 			    group_element.append((function() {
 				var remove_element = $(document.createElement('span'));
@@ -112,9 +119,11 @@ $.widget("ui.osw_roster", {
 			group_list = $(document.createElement('ul'));
 			group_list.addClass('groups');
 
+			if (typeof(contact.groups) !== 'undefined') {
 			$.each(contact.groups, function(index, value) {
 			    group_list.append(create_group_element(contact, value));
 			});
+			}
 			// Add an 'add' to the group list which will add another group to the contact
 			group_element = $(document.createElement('li'));
 			group_element.text('[add]');
