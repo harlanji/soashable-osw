@@ -107,22 +107,25 @@ $.widget("ui.osw_roster", {
 	if (Contact.has_element(contact)) {
 	    
 	    $.each($('.' + Contact.get_matcher(contact) + ' .nickname'), function(index, element) {
-		$(element).html(contact.name);
+		$(element).html(contact.nickname === '' ? contact.jid : contact.nickname);
 	    });
 	    if (typeof(contact.avatar) !== 'undefined' && contact.avatar !== '') {
-		$.each($('.' + Contact.get_matcher(contact)), function(index, element) {
-		    if (typeof(contact.avatar.url) === 'undefined' || contact.avatar.url === '') {
-			$(element).css('background', 'data:image/png;base64,' + contact.avatar.data);
-		    } else {
-			$(element).css('background', contact.avatar.url);
-		    }
-		});
+		if (typeof(contact.avatar.url) === 'undefined' || contact.avatar.url === '') {
+		    $.each($('.' + Contact.get_matcher(contact) + ' img.avatar'), function(index, element) {
+			element.src = 'data:' + contact.avatar.type + ';base64,' + contact.avatar.data;
+		    });
+		} else {
+
+		}
 	    }
 	} else {
 	    contactlist_element = $(that.element);
 	    element = $(document.createElement('li'));
 	    element.addClass(Contact.get_matcher(contact));
 	    element.addClass('contact');
+	    avatar = document.createElement('img');
+	    $(avatar).addClass('avatar');
+	    element.append(avatar);
 	    element.append('<span class="nickname">' + contact.name + '</span>');
 	    // Create a button indicating if this contact is followed or not
 	    element.append(create_subscription_element(contact));
