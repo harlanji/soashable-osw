@@ -11,6 +11,14 @@ body {
   line-height: 36px;  
 }
 
+#roster ul li {
+  line-height: 36px;  
+}
+
+#roster ul li.available {
+  color: green;
+}
+
 #roster ul li ul li {
   line-height: 1.2em;
 }
