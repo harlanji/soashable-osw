@@ -11,6 +11,21 @@ body {
   line-height: 36px;  
 }
 
+#roster ul li {
+  background: url('/soashable-osw/images/avatar_18x24.png') no-repeat;
+  padding-left: 24px;
+  line-height: 36px;  
+}
+
+#roster ul li.available {
+  color: green;
+}
+
+#roster ul li ul li {
+  padding-left: 5px;
+  background: none;
+}
+
 #roster ul li ul li {
   line-height: 1.2em;
 }
