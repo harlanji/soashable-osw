@@ -28,6 +28,7 @@ $.widget("ui.osw_roster", {
     },
     _init: function() {
 	var that = this;
+	if (typeof(this.options.connection.roster.set_callbacks) !== 'undefined') {
 	this.options.connection.roster.set_callbacks({
 	    presence_subscription_request: function() {
 	    },
@@ -65,12 +66,12 @@ $.widget("ui.osw_roster", {
 			subscription_element.bind('click', function() {
 			    var status = $(this).html();
 			    if (status === '[follow]') {
-				client.follow(contact.jid, function() {
+				connection.roster.follow(contact.jid, function() {
 				    contact.subscription = 'unsubscribe';
 				    subscription_element.text('[unfollow]');
 				});
 			    } else if (status === '[unfollow]') {
-				client.unfollow(contact.jid, function() {
+				connection.roster.unfollow(contact.jid, function() {
 				    contact.subscription = 'subscribe';
 				    subscription_element.text('[follow]');
 				});
@@ -151,11 +152,14 @@ $.widget("ui.osw_roster", {
 		}
 	    }
 	});
+	}
     },						   
     destroy: function() {
 	
     },
     refresh: function() {
-	this.options.connection.roster.fetch();
+	if (typeof(this.options.connection.roster) !== 'undefined') {
+	    this.options.connection.roster.fetch();
+	}
     }
 });
