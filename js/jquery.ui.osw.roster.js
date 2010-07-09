@@ -166,9 +166,6 @@ $.widget("ui.osw_roster", {
 	    },
 	    contact_changed: function(contact) {
 		that._update_contact(contact);
-	    },
-	    presence_changed: function(contact) {
-		that._update_contact(contact);
 	    }
 	});
     },						   
