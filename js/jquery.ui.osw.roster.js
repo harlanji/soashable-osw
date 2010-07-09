@@ -110,11 +110,11 @@ $.widget("ui.osw_roster", {
 		$(element).html(contact.name);
 	    });
 	    if (typeof(contact.avatar) !== 'undefined' && contact.avatar !== '') {
-		$.each($('.' + Contact.get_matcher(contact) + ' .avatar'), function(index, element) {
+		$.each($('.' + Contact.get_matcher(contact)), function(index, element) {
 		    if (typeof(contact.avatar.url) === 'undefined' || contact.avatar.url === '') {
-			$(element).attr('src', 'data:image/png;base64,' + contact.avatar.data);
+			$(element).css('background', 'data:image/png;base64,' + contact.avatar.data);
 		    } else {
-			$(element).attr('src', contact.avatar.url);
+			$(element).css('background', contact.avatar.url);
 		    }
 		});
 	    }
@@ -123,7 +123,7 @@ $.widget("ui.osw_roster", {
 	    element = $(document.createElement('li'));
 	    element.addClass(Contact.get_matcher(contact));
 	    element.addClass('contact');
-	    element.append('<img src="/soashable-osw/images/avatar_18x24.png" class="avatar"/><span class="nickname">' + contact.name + '</span>');
+	    element.append('<span class="nickname">' + contact.name + '</span>');
 	    // Create a button indicating if this contact is followed or not
 	    element.append(create_subscription_element(contact));
 	    contactlist_element.append(element);	
