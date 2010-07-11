@@ -121,11 +121,11 @@
       </script>
       <script id='template_ui_osw_conversation' type='text/x-jqote-template'>
         <![CDATA[
-            <div class="osw_conversation" >
-            <div class="incoming_text"></div>
-            <textarea class="outgoing_text">Hello, <%= this.partner %>!</textarea>
-            <button class="send_message">Send Message</button>
-            </div>
+			<div class="osw_conversation" >
+				<div class="incoming_text" style="height: 200px; overflow: auto; border: 1px solid black;"></div>
+				<textarea class="outgoing_text">Hello, <%= this.partner %>!</textarea>
+				<button class="send_message">Send Message</button>
+			</div>
         ]]>
       </script>
       <script id='template_ui_osw_activitypublish' type='text/x-jqote-template'>
@@ -133,6 +133,7 @@
             <div class="osw_activitypublish">
             <form class="form">
             <input type="text" class="status" name="status"/>
+			<span class="aclrule"/>
             <input type="submit" class="submit" name="submit" value="submit"/>
             </form>
             </div>
