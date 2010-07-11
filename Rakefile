@@ -10,7 +10,8 @@ JS = {
   :jquery => FileList['**/jquery*.js'].sort,
   :strophe => {
     :core => FileList[STROPHE[:core] + "*.js"].sort,
-    :plugins => FileList[STROPHE[:plugins] + "*.js"].exclude(/flxhr/).sort
+    :plugins => FileList[STROPHE[:plugins] + "*.js"].exclude(/flxhr/).sort,
+    :vendor => ["jquery.xml2json.js"]
   },
   :soashable => FileList["**/soashable*.js"]
 }

@@ -109,6 +109,7 @@ $(document).ready(function () {
 		$(element).click(function() { 
 		    var form = $('#profile form');
 		    form.osw_profile('refresh');
+		    $('#profile form').osw_profile('refresh'); 
 		    $('#profile').dialog('open'); 
 		});
 	    } else if ($(element).hasClass('disconnect')) {

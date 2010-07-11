@@ -9,6 +9,8 @@
       %script{ :type => "text/javascript", :src => strophe_url + "src/" + File.basename(filename)}
     - javascript[:strophe][:plugins].each do |filename|
       %script{ :type => "text/javascript", :src => strophe_url + "plugins/" + File.basename(filename)}
+    - javascript[:strophe][:vendor].each do |filename|
+      %script{ :type => "text/javascript", :src => strophe_url + "vendor/" + File.basename(filename)}
     - javascript[:soashable].each do |filename|
       %script{ :type => "text/javascript", :src => filename}        
 
@@ -29,41 +31,31 @@
       .publish-view
       .activity-view
     .chat-bar
+    #vcard_dialog.vcard
+      %img.avatar
+      .fn.nickname 
+        Nickname
+        .value      
+      .fn.surname
+        Surname
+        .value
+      .fn.given 
+        Given
+        .value
+      
+      
     #profile{:style => "display:none"}
       %form
-        %label.fn
-          Name
-          %input.text 
         %label.nickname
           Nickname
-          %input.text
+          %input.value
         %fieldset.n
-          %legend Names
-          %label.surname
+          %label.n.surname
             Surname
-            %input.text
-          %label.given
-            Given
-            %input.text
-          %label.prefix
-            Prefix
-            %input.text
-          %label.suffix
-            Suffix
-            %input.text
-        %label.bday
-          Birthday
-          %input.date 
-        %fieldset.email
-          %legend
-            Email
-          %label.type
-            Type
-            %input.text
-          %input.text
-        %label.photo
-          Photo
-          %input.uri
+            %input.value
+          %label.n.given
+            Given name
+            %input.value
         %button.save
           Save
           

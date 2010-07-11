@@ -18,6 +18,10 @@ var Contact = {
 	
 };
 
+var defined = function(obj) {
+    return typeof(obj) !== 'undefined';
+};
+
 // Not used for now.
 $.widget("ui.osw_roster", {
     options: {
@@ -27,7 +31,7 @@ $.widget("ui.osw_roster", {
 	$.osw_controller(this);
     },
     _update_contact: function(contact) {
-	var that, element, group_list, contactlist_element, group_element, create_subscription_element, create_group_list_element, group_prompt_handler, create_group_element;
+	var that, element, group_list, contactlist_element, group_element, create_subscription_element, create_group_list_element, group_prompt_handler, create_group_element, create_vcard_button;
 
 	that = this;
 
@@ -52,6 +56,68 @@ $.widget("ui.osw_roster", {
 	    });
 	    element.append(subscription_element);
 	    return subscription_element;
+	};
+
+	create_vcard_button = function(contact) {
+	    var button;
+	    button = $(document.createElement('span'));
+	    button.addClass('vcard action');
+	    button.text('[vcard]');
+	    button.bind('click', function() {
+		// TODO: This should probably be moved out into a seperate jQuery widget
+		connection.vcardtemp.fetch(contact.jid, function(vcard) {
+		    // Populate the hCard
+		    (function() {
+			var properties, set_hcard_element, index;
+			console.debug('Populating hcard');
+			console.debug(vcard);
+			// Function which will set the value of a hCard element. If the
+			// value is not defined or is blank then the hCard element will be
+			// hidden.
+			set_hcard_element = function(expression, value) {
+			    element = $(expression);
+			    if (element.length > 0) {
+				element = element.first();
+				if (typeof(value) === 'undefined' || value === '') {
+				    element.hide();
+				} else {
+				    element.show();
+				    element.children('.value').first().text(value);
+				}
+			    }
+			};
+			// A list of jQuery matchers and a matching VCARD property
+			properties = [{
+			    expression: '.vcard .fn.surname',
+			    value: (defined(vcard.N) && defined(vcard.N.SURNAME) ? vcard.N.SURNAME : '')
+			}, {
+			    expression: '.vcard .fn.given',
+			    value: (defined(vcard.N) && defined(vcard.N.GIVEN) ? vcard.N.GIVEN : '')
+			}, {
+			    expression: '.vcard .nickname',
+			    value: (defined(vcard.NICKNAME) ? vcard.NICKNAME : '')
+			}];
+			// Iterate through the properties and set the hCard element within the dialog
+			for (index = 0; index < properties.length; index ++) {
+			    set_hcard_element(properties[index].expression, properties[index].value);
+			}
+			// Do something special for the avatar property
+			if (defined(vcard.PHOTO) && defined(vcard.PHOTO.BINVAL)) {
+			    // TODO: Insert some IE specific code here
+			    $('.vcard .avatar').first().attr('src', 'data:' + vcard.PHOTO.TYPE + ';base64,' + vcard.PHOTO.BINVAL).show();
+			} else {
+			    $('.vcard .avatar').hide();
+			}
+		    }());
+		    $('#vcard_dialog').dialog({
+			autoOpen: true, 
+			height: 300,
+			width: 300,
+			title: 'VCard for ' + contact.name
+		    });
+		});
+	    });
+	    return button;
 	};
 	
 	group_prompt_handler = function(event) {
@@ -105,9 +171,9 @@ $.widget("ui.osw_roster", {
 	};
 	
 	if (Contact.has_element(contact)) {
-	    
-	    $.each($('.' + Contact.get_matcher(contact) + ' .nickname'), function(index, element) {
-		$(element).html(contact.nickname === '' ? contact.jid : contact.nickname);
+	    // Update the name of all contacts
+	    $.each($('.' + Contact.get_matcher(contact) + ' .name'), function(index, element) {
+		$(element).html(contact.name === '' ? contact.jid : contact.name);
 	    });
 	    if (typeof(contact.avatar) !== 'undefined' && contact.avatar !== '') {
 		if (typeof(contact.avatar.url) === 'undefined' || contact.avatar.url === '') {
@@ -126,13 +192,12 @@ $.widget("ui.osw_roster", {
 	    avatar = document.createElement('img');
 	    $(avatar).addClass('avatar');
 	    element.append(avatar);
-	    element.append('<span class="nickname">' + contact.name + '</span>');
+	    element.append('<span class="name">' + contact.name + '</span>');
 	    // Create a button indicating if this contact is followed or not
 	    element.append(create_subscription_element(contact));
+	    element.append(create_vcard_button(contact));
 	    contactlist_element.append(element);	
 	}
-
-	console.debug(contact);
 
 	// Update the current status of the contact
 	$.each($('.' + Contact.get_matcher(contact)), function(index, value) {

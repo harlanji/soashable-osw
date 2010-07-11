@@ -26,11 +26,12 @@
     <script src='/strophejs/plugins/strophe.roster.js' type='text/javascript'></script>
     <script src='/strophejs/plugins/strophe.vcard-temp.js' type='text/javascript'></script>
     <script src='/strophejs/plugins/strophe.vcard4.js' type='text/javascript'></script>
+    <script src='/strophejs/vendor/jquery.xml2json.js' type='text/javascript'></script>
     <script src='js/soashable-osw.js' type='text/javascript'></script>
+    <link href='css/soashable.css' rel='stylesheet' type='text/css' />
     <link href='css/jquery.widgetTree.css' rel='stylesheet' type='text/css' />
     <link href='css/smoothness/jquery-ui-1.8.2.custom.css' rel='stylesheet' type='text/css' />
     <link href='css/qunit.css' rel='stylesheet' type='text/css' />
-    <link href='css/soashable.css' rel='stylesheet' type='text/css' />
   </head>
   <body>
     <div id='menu'>
@@ -47,53 +48,37 @@
       <div class='activity-view'></div>
     </div>
     <div class='chat-bar'></div>
+    <div class='vcard' id='vcard_dialog'>
+      <img class='avatar' />
+      <div class='fn nickname'>
+        Nickname
+        <div class='value'></div>
+      </div>
+      <div class='fn surname'>
+        Surname
+        <div class='value'></div>
+      </div>
+      <div class='fn given'>
+        Given
+        <div class='value'></div>
+      </div>
+    </div>
     <div id='profile' style='display:none'>
       <form>
-        <label class='fn'>
-          Name
-          <input class='text' />
-        </label>
         <label class='nickname'>
           Nickname
-          <input class='text' />
+          <input class='value' />
         </label>
         <fieldset class='n'>
-          <legend>Names</legend>
-          <label class='surname'>
+          <label class='n surname'>
             Surname
-            <input class='text' />
+            <input class='value' />
           </label>
-          <label class='given'>
-            Given
-            <input class='text' />
-          </label>
-          <label class='prefix'>
-            Prefix
-            <input class='text' />
-          </label>
-          <label class='suffix'>
-            Suffix
-            <input class='text' />
+          <label class='n given'>
+            Given name
+            <input class='value' />
           </label>
         </fieldset>
-        <label class='bday'>
-          Birthday
-          <input class='date' />
-        </label>
-        <fieldset class='email'>
-          <legend>
-            Email
-          </legend>
-          <label class='type'>
-            Type
-            <input class='text' />
-          </label>
-          <input class='text' />
-        </fieldset>
-        <label class='photo'>
-          Photo
-          <input class='uri' />
-        </label>
         <button class='save'>
           Save
         </button>
