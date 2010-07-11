@@ -1,0 +1,37 @@
+body {
+  font-size: 12px;
+}
+
+#roster ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#roster ul li {
+  line-height: 36px;  
+}
+
+#roster ul li ul li {
+  line-height: 1.2em;
+}
+
+#roster ul li img {
+  vertical-align: middle;
+  margin-right: 0.5em;
+  height: 24px;
+}
+
+#roster ul li.contact ul.groups {
+  list-style-type: square;
+  padding: 0 0 0 2em;
+}
+
+#roster ul li.contact ul.groups li {
+  font-size: 0.8em;
+}
+
+#roster ul li.contact .action {
+  font-size: 0.8em;
+  padding: 0 0.5em;
+  cursor: pointer
+}

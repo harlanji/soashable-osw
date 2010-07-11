@@ -13,6 +13,7 @@ function log(msg)
 }
 
 
+/*
 function connection_event(status, condition)
 {
     if (status == Strophe.Status.CONNECTING) {
@@ -49,7 +50,7 @@ function connection_event(status, condition)
 			});
     }
 } 
-
+*/
 
 
 
@@ -73,15 +74,33 @@ connection.osw.activities('get', {
 
 var connection;
 
-
+var connection_callback = {
+	connection: function(status) {
+	    $('#connect').get(0).value = status;
+	},
+	connected: function() {
+	    connection.send($pres().tree());
+	    $("#activities .activity-view").osw_activityview('refresh');
+	    $("#roster").dialog({
+		title: 'Contacts',
+		height: 400
+	    });
+	    $('#roster .body').osw_roster('refresh');
+	    $("#activities").dialog('open');
+	    $('#login').dialog('close');
+	    $("#menu").dialog('open');
+	}
+    };
 
 
 
 $(document).ready(function () {
 
+    
+    
 	var login_win = $($('#tpl_login').jqote({
-		default_jid: 'test1@osw1.soashable.com',
-		default_pass: 'test1',
+		default_jid: 'ogriffin@vagrant-ubuntu-lucid',
+		default_pass: 'ogriffin',
 		id: 'login'
 	})).dialog({
 		title: 'Soashable OSW Login',
@@ -94,12 +113,18 @@ $(document).ready(function () {
 					button.value = 'disconnect';
 
 					jid = $('#jid', event.target).get(0).value;
+/*
 
 					connection.connect(jid, 'osw1.soashable.com',
 						$('#pass', event.target).get(0).value,
 						connection_event);
 
 					jid = connection.jid;
+
+*/
+				    domain = jid.match(/@(.*)/)[1];
+				    password = $('#pass', event.target).get(0).value;
+				    connection.account.authenticate(jid, domain, password);
 
 				} else {
 					button.value = 'connect';
@@ -129,42 +154,68 @@ $(document).ready(function () {
 	});
 
 
-	$(".roster-items").treeList({
-		onSelect: function() {
-			alert("selected! "+$(this).treeList('selected').text() );
-		}
+
+
+
+    /* Set up the menu dialog */
+    (function() {
+	$('#menu').dialog({
+	    title: 'Menu',
+	    position: ['left', 'top'],
+	    autoOpen: false,
+	    height: 300
 	});
-
-
-/*
-	$("#roster").treeview({
-		persist: "location",
-		collapsed: false,
-		unique: true
+	$.each($('#menu button'), function(index, element) {
+	    $(element).button();
+	    if ($(element).hasClass('contacts')) {
+		$(element).click(function() { $('#roster').dialog('open'); });
+	    } else if ($(element).hasClass('activity-stream')) {
+		$(element).click(function() { $("#activities").dialog('open'); });
+	    } else if ($(element).hasClass('profile')) {
+		$(element).click(function() { 
+		    var form = $('#profile form');
+		    form.osw_profile('refresh');
+		    $('#profile').dialog('open'); 
+		});
+	    }
 	});
-*/
-
+    }());
 	
 
 
 
 	connection = new Strophe.Connection(BOSH_SERVICE);
 
+    (function() {
+	$('#profile').dialog({
+		title: 'Your Profile',
+		position: ['center', 'middle'],
+		autoOpen: false,
+		height: 400
+	});
+	$('#profile form').osw_profile({connection: connection});
+    }());
+
 	$(".chat-bar").soashable_chatbar({connection: connection});
 	$("#activities .publish-view").osw_activitypublish({connection: connection});
 	$("#activities .activity-view").osw_activityview({connection: connection});
+    $('#roster .body').osw_roster({connection: connection});
 
+    connection.account.set_connection_callbacks(connection_callback);
 
 	//connection.addHandler( received_message, 'message', null, null, null, null );
 
 	// Uncomment the following lines to spy on the wire traffic.
-	//connection.rawInput = function (data) { log('RECV: ' + data); };
-	//connection.rawOutput = function (data) { log('SEND: ' + data); };
+	connection.rawInput = function (data) { console.debug('RECV: ' + data); };
+	connection.rawOutput = function (data) { console.debug('SEND: ' + data); };
 
 	// Uncomment the following line to see all the debug output.
 	//Strophe.log = function (level, msg) { log('LOG: ' + msg); };
 
 
+    (function() {
+
+    }());
 
 });
 

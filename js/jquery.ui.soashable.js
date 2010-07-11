@@ -15,11 +15,11 @@ $.widget( "ui.soashable_chatbar", {
 
 		}));
 
-		this._uiRoster = $("<ul class='roster'></ul>").osw_roster({
+		/*this._uiRoster = $("<ul class='roster'></ul>").osw_roster({
 			connection: this.options.connection
-		});
+		})*/;
 
-		this.element.append( this._uiRoster );
+		//this.element.append( this._uiRoster );
 	},
 	_init: function() {
 

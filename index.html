@@ -1,131 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-	<head>
-		<title>Soashable OSW</title>
-
-		<!-- jquery + plugins -->
-		<script type="text/javascript" src="js/external/jquery-1.4.2.js"></script>
-
-		<script type="text/javascript" src="js/external/jquery.xmlns.js"></script>
-		<script type="text/javascript" src="js/external/jquery.jqote.js"></script>
-		<script type="text/javascript" src="js/external/jquery.sanitizeHtml.js"></script>
-
-		<!-- utils -->
-		<script type="text/javascript" src="js/util.js"></script>
-		<script type="text/javascript" src="activitystreams-js/activitystreams.js"></script>
-
-		<!-- jquery ui + plugins -->
-		<script type="text/javascript" src="js/external/jquery-ui-1.8.2.custom.min.js"></script>
-		<link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.2.custom.css" />
-
-		<script type="text/javascript" src="js/external/jquery.jv.widgetTree.js"></script>
-		<link rel="stylesheet" href="css/jquery.widgetTree.css" />
-
-		<script type="text/javascript" src="js/jquery.ui.osw.js"></script>
-		<script type="text/javascript" src="js/jquery.ui.soashable.js"></script>
-		
-		
-
-		<!-- strophe + plugins -->
-		<script type="text/javascript" src="strophejs/strophe.js"></script>
-
-		<script type="text/javascript" src="strophejs/plugins/strophe.pubsub.js"></script>
-		<script type="text/javascript" src="strophejs/plugins/strophe.roster.js"></script>
-		<script type="text/javascript" src="strophejs/plugins/strophe.account.js"></script>
-		<script type="text/javascript" src="strophejs/plugins/strophe.osw.js"></script>
-
-
-		<!-- application -->
-		<script type="text/javascript" src="js/soashable-osw.js"></script>
-	</head>
-<body>
-
-
-<div class="chat-bar">
-
-
-</div>
-
-<div id="activities">
-	<div class="publish-view">
-	</div>
-	<hr/>
-	<div class="activity-view">
-	</div>
-</div>
-
-
-<div id="templates" class="display: none; visibility: hidden;">
-
-<script type="text/x-jqote-template" id="tpl_login">
-  <![CDATA[
-  <div id='<%= this.id %>' style='text-align: center'>
-    <form name='cred'>
-      <label for='jid'>JID:</label>
-      <input type='text' id='jid' value='<%= this.default_jid %>' />
-      <label for='pass'>Password:</label>
-      <input type='password' id='pass' value='<%= this.default_pass %>' />
-      <input type='button' id='connect' value='connect' />
-    </form>
-  </div>
-  ]]>
-</script>
-
-<script type="text/x-jqote-template" id="tpl_log">
-  <![CDATA[
-  <div id='<%= this.id %>'></div>
-  ]]>
-</script>
-
-<script type="text/x-jqote-template" id="template_ui_osw_conversation">
-<![CDATA[
-<div class="osw_conversation" >
-	<div class="incoming_text" style="height: 200px; overflow: auto; border: 1px solid black;"></div>
-	<textarea class="outgoing_text">Hello, <%= this.partner %>!</textarea>
-	<button class="send_message">Send Message</button>
-</div>
-]]>
-</script>
-
-
-<script type="text/x-jqote-template" id="template_ui_osw_activitypublish">
-<![CDATA[
-<div class="osw_activitypublish">
-	<form class="form">
-		<input type="text" class="status" name="status"/>
-		<span class="aclrule"/>
-		<input type="submit" class="submit" name="submit" value="submit"/>
-	</form>
-</div>
-]]>
-</script>
-
-
-
-
-
-<script type="text/x-jqote-template" id="template_ui_osw_activityview">
-<![CDATA[
-<div class="activities">
-</div>
-]]>
-</script>
-
-<script type="text/x-jqote-template" id="template_ui_osw_activityview_activity">
-<![CDATA[
-<div class="activity" id="<%= this.id %>">
-	<p>
-	Activity by <%= this.act.name %> (<%= this.act.jid %>): <%= this.act.title %>. 
-	contains <%= this.act.objects.length %> objects 
-	and <%= this.act.acl.length %> ACL rules.
-	</p>
-
-	<div class="objects"></div>
-</div>
-]]>
-</script>
-
-
-
-</div>
-</body>
+  <head>
+    <title>Soashable</title>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />
+    <script src='js/external/jquery-1.4.2.js' type='text/javascript'></script>
+    <script src='js/external/jquery-1.4.2.min.js' type='text/javascript'></script>
+    <script src='js/external/jquery-ui-1.8.2.custom.min.js' type='text/javascript'></script>
+    <script src='js/external/jquery.jqote.js' type='text/javascript'></script>
+    <script src='js/external/jquery.jv.widgetTree.js' type='text/javascript'></script>
+    <script src='js/external/jquery.xmlns.js' type='text/javascript'></script>
+	<script type="text/javascript" src="js/external/jquery.sanitizeHtml.js"></script>
+    <script src='js/jquery.ui.osw.js' type='text/javascript'></script>
+    <script src='js/jquery.ui.osw.profile.js' type='text/javascript'></script>
+    <script src='js/jquery.ui.osw.roster.js' type='text/javascript'></script>
+    <script src='js/jquery.ui.soashable.js' type='text/javascript'></script>
+    <script src='/strophejs/src/base64.js' type='text/javascript'></script>
+    <script src='/strophejs/src/core.js' type='text/javascript'></script>
+    <script src='/strophejs/src/md5.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.account.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.dataforms.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.disco.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.muc.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.osw.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.pep.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.pubsub.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.roster.js' type='text/javascript'></script>
+    <script src='/strophejs/plugins/strophe.vcard.js' type='text/javascript'></script>
+	<script type="text/javascript" src="js/util.js"></script>
+	<script type="text/javascript" src="activitystreams-js/activitystreams.js"></script>
+    <script src='js/soashable-osw.js' type='text/javascript'></script>
+    <link href='css/soashable.css' rel='stylesheet' type='text/css' />
+    <link href='css/jquery.widgetTree.css' rel='stylesheet' type='text/css' />
+    <link href='css/smoothness/jquery-ui-1.8.2.custom.css' rel='stylesheet' type='text/css' />
+    <link href='css/qunit.css' rel='stylesheet' type='text/css' />
+  </head>
+  <body>
+    <div id='menu'>
+      <button class='contacts'>Contacts</button>
+      <button class='activity-stream'>Activity stream</button>
+      <button class='profile'>Profile</button>
+    </div>
+    <div id='roster'>
+      <ul class='body'></ul>
+    </div>
+    <div id='activities'>
+      <div class='publish-view'></div>
+      <div class='activity-view'></div>
+    </div>
+    <div class='chat-bar'></div>
+    <div id='profile' style='display:none'>
+      <form>
+        <label class='fn'>
+          Name
+          <input class='text' />
+        </label>
+        <label class='nickname'>
+          Nickname
+          <input class='text' />
+        </label>
+        <fieldset class='n'>
+          <legend>Names</legend>
+          <label class='surname'>
+            Surname
+            <input class='text' />
+          </label>
+          <label class='given'>
+            Given
+            <input class='text' />
+          </label>
+          <label class='prefix'>
+            Prefix
+            <input class='text' />
+          </label>
+          <label class='suffix'>
+            Suffix
+            <input class='text' />
+          </label>
+        </fieldset>
+        <label class='bday'>
+          Birthday
+          <input class='date' />
+        </label>
+        <fieldset class='email'>
+          <legend>
+            Email
+          </legend>
+          <label class='type'>
+            Type
+            <input class='text' />
+          </label>
+          <input class='text' />
+        </fieldset>
+        <label class='photo'>
+          Photo
+          <input class='uri' />
+        </label>
+        <button class='save'>
+          Save
+        </button>
+      </form>
+    </div>
+    <div id='templates' style='display: none; visibility: hidden'>
+      <script id='tpl_login' type='text/x-jqote-template'>
+        <![CDATA[
+            <div id='<%= this.id %>' style='text-align: center'>
+            <form name='cred'>
+            <label for='jid'>JID:</label>
+            <input type='text' id='jid' value='<%= this.default_jid %>' />
+            <label for='pass'>Password:</label>
+            <input type='password' id='pass' value='<%= this.default_pass %>' />
+            <input type='button' id='connect' value='connect' />
+            </form>
+            </div>
+        ]]>
+      </script>
+      <script id='tpl_log' type='text/x-jqote-template'>
+        <![CDATA[
+            <div id='<%= this.id %>'></div>
+        ]]>
+      </script>
+      <script id='template_ui_osw_conversation' type='text/x-jqote-template'>
+        <![CDATA[
+            <div class="osw_conversation" >
+            <div class="incoming_text"></div>
+            <textarea class="outgoing_text">Hello, <%= this.partner %>!</textarea>
+            <button class="send_message">Send Message</button>
+            </div>
+        ]]>
+      </script>
+      <script id='template_ui_osw_activitypublish' type='text/x-jqote-template'>
+        <![CDATA[
+            <div class="osw_activitypublish">
+            <form class="form">
+            <input type="text" class="status" name="status"/>
+            <input type="submit" class="submit" name="submit" value="submit"/>
+            </form>
+            </div>
+        ]]>
+      </script>
+      <script id='template_ui_osw_activityview' type='text/x-jqote-template'>
+        <![CDATA[
+            <div class="activities">
+            </div>
+        ]]>
+      </script>
+      <script id='template_ui_osw_activityview_activity' type='text/x-jqote-template'>
+        <![CDATA[
+            <div class="activity" id="<%= this.id %>">
+            <p>
+            <div class="contact <%= this.jid_class %>"><img class="avatar"/><span class="nickname"><%= this.act.name %></span></div>: <%= this.act.title %>. 
+            contains <%= this.act.objects.length %> objects 
+            and <%= this.act.acl.length %> ACL rules.
+            </p>
+            <div class="objects"></div>
+            </div>
+        ]]>
+      </script>
+    </div>
+  </body>
 </html>
