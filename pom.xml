@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.soashable.web</groupId>
+    <artifactId>soashable</artifactId>
+    <packaging>war</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+
+    <name>Soashable Web Application</name>
+    <url>http://soashable.sourceforge.net</url>
+    <description>
+		Soashable Web Client
+    </description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.5</version>
+                <configuration>
+                    <contextPath>/</contextPath>
+                    <scanIntervalSeconds>1</scanIntervalSeconds>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo.javascript</groupId>
+                <artifactId>javascript-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <!-- in the resource filtering section, sources have properties replaced
+                        and are moved to target/filtered-javascript. see above. -->
+                    <sourceDirectory>js/</sourceDirectory>
+
+					<useArtifactId>true</useArtifactId>
+                    
+                    <strip>;;;</strip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>war-package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+        
+      
+  
+
+        <dependency>
+            <groupId>com.soashable.vendor.jquery</groupId>
+            <artifactId>jquery</artifactId>
+            <version>1.4.2</version>
+            <type>javascript</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.soashable.vendor.jquery</groupId>
+            <artifactId>jquery-ui</artifactId>
+            <version>1.8.3</version>
+            <type>javascript</type>
+        </dependency>
+
+		<dependency>
+            <groupId>com.soashable.vendor.strophejs</groupId>
+            <artifactId>strophejs</artifactId>
+            <version>1.0</version>
+            <type>javascript</type>
+        </dependency>
+
+      <dependency>
+            <groupId>com.soashable.activitystreams</groupId>
+            <artifactId>activitystreams-js</artifactId>
+            <version>1.0.0</version>
+            <type>javascript</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.soashable.jquery</groupId>
+            <artifactId>sanitizeHtml-jquery-plugin</artifactId>
+            <version>1.0.0</version>
+            <type>javascript</type>
+        </dependency>
+
+
+    </dependencies>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>MIT-LICENSE.txt</url>
+        </license>
+    </licenses>
+
+	<scm>
+        <connection>scm:git:git://github.com/harlanji/soashable-osw.git</connection>
+        <url>http://github.com/harlanji/soashable-osw</url>
+	</scm>
+
+
+	<repositories>
+		<repository>
+			<id>vendor-maven-js-staging</id>
+			<url>https://oss.sonatype.org/content/repositories/comsoashable-331/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+
+</project>
+
